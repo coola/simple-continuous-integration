@@ -9,21 +9,19 @@ namespace Share_Tom_CI
     {
         public bool Validate()
         {
-            Uri collectionUri = new Uri("https://keringdev.visualstudio.com/");
+            NetworkCredential netCred = new NetworkCredential(
+                 "coola",
+                 "CoolaHaslo123");
+            BasicAuthCredential basicCred = new BasicAuthCredential(netCred);
+            TfsClientCredentials tfsCred = new TfsClientCredentials(basicCred) {AllowInteractive = false};
 
-            NetworkCredential credential = new NetworkCredential("", "");
-            TfsTeamProjectCollection teamProjectCollection = new TfsTeamProjectCollection(collectionUri, credential);
-            teamProjectCollection.EnsureAuthenticated();
+            TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(
+                new Uri("https://keringdev.visualstudio.com"),
+                tfsCred);
 
-            WorkItemStore workItemStore = teamProjectCollection.GetService<WorkItemStore>();
+            tpc.Authenticate();
 
-            WorkItemCollection workItemCollection = workItemStore.Query("QUERY HERE");
-
-            foreach (var item in workItemCollection)
-            {
-                //Do something here.
-            }
-            return false;
+            return tpc.HasAuthenticated;
         }
     }
 }
