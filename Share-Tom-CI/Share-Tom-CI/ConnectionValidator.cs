@@ -11,7 +11,7 @@ namespace Share_Tom_CI
         {
             Uri collectionUri = new Uri("https://keringdev.visualstudio.com/");
 
-            NetworkCredential credential = new NetworkCredential("michal.kulinski@accenture.com", "Fredek14!");
+            NetworkCredential credential = new NetworkCredential("", "");
             TfsTeamProjectCollection teamProjectCollection = new TfsTeamProjectCollection(collectionUri, credential);
             teamProjectCollection.EnsureAuthenticated();
 
