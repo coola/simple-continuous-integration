@@ -12,5 +12,13 @@ namespace Share_Tom_CI.Tests
             Assert.True(validate);
         }
 
+        [Fact]
+        public void RetrieveCodeFromTFS()
+        {
+            var codeManager = new CodeManager();
+            var validate = codeManager.GetCode();
+            Assert.True(validate);
+        }
+
     }
 }
