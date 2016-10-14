@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
@@ -15,19 +18,41 @@ namespace Share_Tom_CI
             tpc.Authenticate();
 
             VersionControlServer vcServer = tpc.GetService<VersionControlServer>();
-            ItemSet itemSet = vcServer.GetItems("$/", RecursionType.OneLevel);
+            ItemSet itemSet = vcServer.GetItems("$/ShARe-Evolution/ShARe-TOM", RecursionType.OneLevel);
+            var latestChangesetId = vcServer.GetLatestChangesetId();
+
+            var dateTime = DateTime.Now;
+            var pathDir =
+                $@"C:\Data\Source\ShareTomBuildDir_{dateTime.Year}_{dateTime.Month}_{dateTime.Day}-{dateTime.Hour}_{dateTime
+                    .Minute}_{dateTime.Second}_ver_{latestChangesetId}";
+
+            Directory.CreateDirectory(pathDir);
+
             foreach (Item item in itemSet.Items)
             {
-                Debug.WriteLine(item.ServerItem);
+                var serverItem = item.ServerItem;
+                Debug.WriteLine($"Downloading: {serverItem}");
+
+                var filePath = serverItem.Replace("$/ShARe-Evolution/ShARe-TOM", string.Empty);
+
+                if (filePath.IsNullOrEmpty()) continue;
+
+                var fullPath = pathDir + filePath;
+
+                switch (item.ItemType)
+                {
+                    case ItemType.File:
+                        using (var output = new FileStream(fullPath, FileMode.Create))
+                        {
+                            item.DownloadFile().CopyTo(output);
+                        }
+                        break;
+                    case ItemType.Folder:
+                        Directory.CreateDirectory(fullPath);
+                        break;
+                }
             }
 
-            // Can retrieve REST client from same TfsTeamProjectCollection instance
-            TfvcHttpClient tfvcClient = tpc.GetClient<TfvcHttpClient>();
-            List<TfvcItem> tfvcItems = tfvcClient.GetItemsAsync("$/", VersionControlRecursionType.Full).Result;
-            foreach (TfvcItem item in tfvcItems)
-            {
-                Debug.WriteLine(item.Path);
-            }
 
             //tpc.Connect(ConnectOptions.None);
 
