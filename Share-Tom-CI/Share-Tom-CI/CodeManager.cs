@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using Microsoft.TeamFoundation.Common;
-using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
 namespace Share_Tom_CI
@@ -18,7 +15,7 @@ namespace Share_Tom_CI
             tpc.Authenticate();
 
             VersionControlServer vcServer = tpc.GetService<VersionControlServer>();
-            ItemSet itemSet = vcServer.GetItems("$/ShARe-Evolution/ShARe-TOM", RecursionType.OneLevel);
+            ItemSet itemSet = vcServer.GetItems("$/ShARe-Evolution/ShARe-TOM", RecursionType.Full);
             var latestChangesetId = vcServer.GetLatestChangesetId();
 
             var dateTime = DateTime.Now;
@@ -38,6 +35,8 @@ namespace Share_Tom_CI
                 if (filePath.IsNullOrEmpty()) continue;
 
                 var fullPath = pathDir + filePath;
+
+                if (new FileInfo(fullPath).Exists) continue;
 
                 switch (item.ItemType)
                 {
