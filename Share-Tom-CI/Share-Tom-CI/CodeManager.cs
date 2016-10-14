@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
@@ -8,7 +9,7 @@ namespace Share_Tom_CI
 {
     public class CodeManager
     {
-        public bool GetCode()
+        public string GetCode()
         {
             var tpc = ConnectionManager.GetTfsTeamProjectCollection();
 
@@ -51,11 +52,15 @@ namespace Share_Tom_CI
                         break;
                 }
             }
+            
 
+            return pathDir;
+        }
 
-            //tpc.Connect(ConnectOptions.None);
-
-            return tpc.HasAuthenticated;
+        public static string GetSolutionFile(string directoryPath)
+        {
+            var fileEntries = Directory.GetFiles(directoryPath);
+            return fileEntries.Single(file => file.Contains(".sln"));
         }
     }
 }
