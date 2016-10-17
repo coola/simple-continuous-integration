@@ -6,11 +6,7 @@ namespace Share_Tom_CI.Tests
 {
     public class GetTFSCodeTests
     {
-        private readonly bool skipLongTests;
-        public GetTFSCodeTests()
-        {
-            skipLongTests = false;
-        }
+
         [Fact]
         public void CheckIfWeHaveConnectionToTFS()
         {
@@ -31,31 +27,42 @@ namespace Share_Tom_CI.Tests
 
         private static ConnectionInfo GetKerringDevConnectionInfo()
         {
-            return new ConnectionInfo {ServiceAddress = "https://keringdev.visualstudio.com/", UserName = "coola" , Password = "CoolaHaslo123" };
+            return new ConnectionInfo
+            {
+                ServiceAddress = "https://keringdev.visualstudio.com/",
+                UserName = "coola",
+                Password = "CoolaHaslo123"
+            };
         }
 
         private static ConnectionInfo GetTestCIConnectionInfo()
         {
-            return new ConnectionInfo { ServiceAddress = "https://coola.visualstudio.com/", UserName = "testCoola", Password = "CoolaHaslo123" };
+            return new ConnectionInfo
+            {
+                ServiceAddress = "https://coola.visualstudio.com/",
+                UserName = "testCoola",
+                Password = "CoolaHaslo123"
+            };
         }
 
-        [SkippableFact]
+        [Fact]
         public void RetrieveCodeFromTFS()
         {
-            Skip.If(skipLongTests);
-            var codeManager = GetCITestManager();
+            var codeManager = GetCITestCodeManager();
             var codeFolderPath = codeManager.GetCode();
             Assert.NotEqual(codeFolderPath, string.Empty);
         }
 
         private static CodeManager GetKerringDevCodeManager()
         {
-            return new CodeManager(GetKerringConnectionManager().GetTfsTeamProjectCollection(), "$/ShARe-Evolution/ShARe-TOM", GetLocalWorkingDirectoryPath() );
+            return new CodeManager(GetKerringConnectionManager().GetTfsTeamProjectCollection(),
+                "$/ShARe-Evolution/ShARe-TOM", GetLocalWorkingDirectoryPath());
         }
 
-        private static CodeManager GetCITestManager()
+        private static CodeManager GetCITestCodeManager()
         {
-            return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), "$/CITestProject", GetLocalWorkingDirectoryPath());
+            return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), "$/CITestProject",
+                GetLocalWorkingDirectoryPath());
         }
 
         private static string GetLocalWorkingDirectoryPath()
@@ -67,15 +74,14 @@ namespace Share_Tom_CI.Tests
         {
             var directory = new DirectoryInfo(GetLocalWorkingDirectoryPath());
             return (from f in directory.GetFiles()
-                    orderby f.LastWriteTime descending
-                    select f.Name).First();
-
+                orderby f.LastWriteTime descending
+                select f.Name).First();
         }
 
         [Fact]
         public void BuildSolutionOnCode()
         {
-            var codeManager = GetCITestManager();
+            var codeManager = GetCITestCodeManager();
             var codeFolderPath = codeManager.GetCode();
             Assert.NotEqual(codeFolderPath, string.Empty);
         }
@@ -97,6 +103,55 @@ namespace Share_Tom_CI.Tests
             Assert.True(buildResult);
         }
 
+        [Fact]
+        public void CheckIfFailedCommitFails()
+        {
+            var testCiConnectionManager = GetTestCIConnectionManager();
+            Assert.True(testCiConnectionManager.Validate());
+            var pathToCodeDir = GetCITestCodeManager().GetCode(TestCommits.BuildWrongTestOK);
+            var buildManager = new BuildManager(pathToCodeDir, "Debug", "Any CPU");
+            Assert.False(buildManager.BuildSolution());
+        }
 
+        [Fact]
+        public void CheckIfGoodCommitIsOK()
+        {
+            var testCiConnectionManager = GetTestCIConnectionManager();
+            Assert.True(testCiConnectionManager.Validate());
+            var pathToCodeDir = GetCITestCodeManager().GetCode(TestCommits.BuildOKTestWrong);
+            var buildManager = new BuildManager(pathToCodeDir, "Debug", "Any CPU");
+            Assert.True(buildManager.BuildSolution());
+        }
+
+        [Fact]
+        public void SendBrokenBuildMail()
+        {
+            var tfsTeamProjectCollection = GetTestCIConnectionManager().GetTfsTeamProjectCollection();
+            var ciTestCodeManager = GetCITestCodeManager();
+            var changsetAuthor = ciTestCodeManager.GetChangsetAuthor(TestCommits.BuildWrongTestOK);
+            new MailManager(TestCommits.BuildWrongTestOK, changsetAuthor).SendNoBuildMessageUsingVisualStudioServices(tfsTeamProjectCollection);
+        }
+
+        [Fact]
+        public void SendBrokenBuildMailConcreteUser()
+        {
+            var tfsTeamProjectCollection = GetTestCIConnectionManager().GetTfsTeamProjectCollection();
+            new MailManager(TestCommits.BuildWrongTestOK, "Michał Kuliński").SendNoBuildMessageUsingVisualStudioServices(tfsTeamProjectCollection);
+        }
+
+        [Fact]
+        public void CheckOwner()
+        {
+            var ciTestCodeManager = GetCITestCodeManager();
+            var changsetAuthor = ciTestCodeManager.GetChangsetAuthor(TestCommits.BuildWrongTestOK); 
+            Assert.Equal("Coola", changsetAuthor);
+        }
+
+        public static class TestCommits
+        {
+            public static int BuildWrongTestOK = 10;
+            public static int BuildOKTestWrong = 11;
+            public static int BuildOKTestOK = 12;
+        }
     }
 }

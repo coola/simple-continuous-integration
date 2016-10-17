@@ -10,35 +10,40 @@ namespace Share_Tom_CI
 {
     public class CodeManager
     {
-        private readonly TfsTeamProjectCollection _teamProjectCollection;
         private readonly string _projectFolderPath;
         private readonly string _localFolderPath;
+        private readonly VersionControlServer _versionControlService;
 
-        public CodeManager(TfsTeamProjectCollection teamProjectCollection, string projectFolderPath, string localFolderPath )
+        public CodeManager(TfsConnection teamProjectCollection, string projectFolderPath,
+            string localFolderPath)
         {
-            _teamProjectCollection = teamProjectCollection;
             _projectFolderPath = projectFolderPath;
             _localFolderPath = localFolderPath;
+            teamProjectCollection.Authenticate();
+            _versionControlService = teamProjectCollection.GetService<VersionControlServer>();
+        }
+
+        public string GetChangsetAuthor(int ChangesetId)
+        {
+            return _versionControlService.GetChangeset(ChangesetId).OwnerDisplayName;
         }
 
         public string GetCode(int? versionNumber = null)
         {
-            _teamProjectCollection.Authenticate();
-
-            var versionControlServer = _teamProjectCollection.GetService<VersionControlServer>();
             int? changesetId;
             ItemSet itemSet;
             if (versionNumber != null)
             {
                 changesetId = versionNumber;
-                itemSet = versionControlServer.GetItems(_projectFolderPath, new ChangesetVersionSpec(versionNumber.Value), RecursionType.Full);
+                itemSet = _versionControlService.GetItems(_projectFolderPath,
+                    new ChangesetVersionSpec(versionNumber.Value), RecursionType.Full);
             }
             else
             {
-                changesetId = versionControlServer.GetLatestChangesetId();
-                itemSet = versionControlServer.GetItems(_projectFolderPath, RecursionType.Full);
+                changesetId = _versionControlService.GetLatestChangesetId();
+                itemSet = _versionControlService.GetItems(_projectFolderPath, RecursionType.Full);
             }
-            
+
             var dateTime = DateTime.Now;
             var pathDir =
                 $@"{_localFolderPath}\ShareTomBuildDir_{dateTime.Year}_{dateTime.Month}_{dateTime.Day}-{dateTime.Hour}_{dateTime
