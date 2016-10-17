@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
@@ -9,29 +10,48 @@ namespace Share_Tom_CI
 {
     public class CodeManager
     {
-        public string GetCode()
+        private readonly TfsTeamProjectCollection _teamProjectCollection;
+        private readonly string _projectFolderPath;
+        private readonly string _localFolderPath;
+
+        public CodeManager(TfsTeamProjectCollection teamProjectCollection, string projectFolderPath, string localFolderPath )
         {
-            var tpc = ConnectionManager.GetTfsTeamProjectCollection();
+            _teamProjectCollection = teamProjectCollection;
+            _projectFolderPath = projectFolderPath;
+            _localFolderPath = localFolderPath;
+        }
 
-            tpc.Authenticate();
+        public string GetCode(int? versionNumber = null)
+        {
+            _teamProjectCollection.Authenticate();
 
-            VersionControlServer vcServer = tpc.GetService<VersionControlServer>();
-            ItemSet itemSet = vcServer.GetItems("$/ShARe-Evolution/ShARe-TOM", RecursionType.Full);
-            var latestChangesetId = vcServer.GetLatestChangesetId();
-
+            var versionControlServer = _teamProjectCollection.GetService<VersionControlServer>();
+            int? changesetId;
+            ItemSet itemSet;
+            if (versionNumber != null)
+            {
+                changesetId = versionNumber;
+                itemSet = versionControlServer.GetItems(_projectFolderPath, new ChangesetVersionSpec(versionNumber.Value), RecursionType.Full);
+            }
+            else
+            {
+                changesetId = versionControlServer.GetLatestChangesetId();
+                itemSet = versionControlServer.GetItems(_projectFolderPath, RecursionType.Full);
+            }
+            
             var dateTime = DateTime.Now;
             var pathDir =
-                $@"C:\Data\Source\ShareTomBuildDir_{dateTime.Year}_{dateTime.Month}_{dateTime.Day}-{dateTime.Hour}_{dateTime
-                    .Minute}_{dateTime.Second}_ver_{latestChangesetId}";
+                $@"{_localFolderPath}\ShareTomBuildDir_{dateTime.Year}_{dateTime.Month}_{dateTime.Day}-{dateTime.Hour}_{dateTime
+                    .Minute}_{dateTime.Second}_ver_{changesetId}";
 
             Directory.CreateDirectory(pathDir);
 
-            foreach (Item item in itemSet.Items)
+            foreach (var item in itemSet.Items)
             {
                 var serverItem = item.ServerItem;
                 Debug.WriteLine($"Downloading: {serverItem}");
 
-                var filePath = serverItem.Replace("$/ShARe-Evolution/ShARe-TOM", string.Empty);
+                var filePath = serverItem.Replace(_projectFolderPath, string.Empty);
 
                 if (filePath.IsNullOrEmpty()) continue;
 
@@ -50,9 +70,12 @@ namespace Share_Tom_CI
                     case ItemType.Folder:
                         Directory.CreateDirectory(fullPath);
                         break;
+                    case ItemType.Any:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
-            
 
             return pathDir;
         }

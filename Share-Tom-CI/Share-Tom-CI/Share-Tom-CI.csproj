@@ -231,8 +231,8 @@
   <ItemGroup>
     <Compile Include="BuildManager.cs" />
     <Compile Include="CodeManager.cs" />
+    <Compile Include="ConnectionInfo.cs" />
     <Compile Include="ConnectionManager.cs" />
-    <Compile Include="ConnectionValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
