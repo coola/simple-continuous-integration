@@ -1,7 +1,7 @@
 ﻿using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.WorkItemTracking.Client;
 
-namespace Share_Tom_CI
+namespace Coola.VisualStudioServices.SimpleContinousIntegration
 {
     public class MailManager
     {

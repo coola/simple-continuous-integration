@@ -2,7 +2,7 @@
 using System.Net;
 using Microsoft.TeamFoundation.Client;
 
-namespace Share_Tom_CI
+namespace Coola.VisualStudioServices.SimpleContinousIntegration
 {
     public class ConnectionManager
     {

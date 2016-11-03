@@ -1,8 +1,9 @@
 ﻿using System.IO;
 using System.Linq;
+using Coola.VisualStudioServices.SimpleContinousIntegration;
 using Xunit;
 
-namespace Share_Tom_CI.Tests
+namespace Coola.VisualStudioServices.SimpleContinousIntegration.Tests
 {
     public class GetTFSCodeTests
     {

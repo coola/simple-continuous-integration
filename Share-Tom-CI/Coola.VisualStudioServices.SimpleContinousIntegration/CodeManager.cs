@@ -6,7 +6,7 @@ using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace Share_Tom_CI
+namespace Coola.VisualStudioServices.SimpleContinousIntegration
 {
     public class CodeManager
     {

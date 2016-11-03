@@ -1,4 +1,4 @@
-﻿namespace Share_Tom_CI
+﻿namespace Coola.VisualStudioServices.SimpleContinousIntegration
 {
     public struct ConnectionInfo
     {

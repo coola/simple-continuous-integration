@@ -7,7 +7,7 @@ using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
 
-namespace Share_Tom_CI
+namespace Coola.VisualStudioServices.SimpleContinousIntegration
 {
     public class BuildManager
     {
