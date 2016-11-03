@@ -238,12 +238,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GetTFSCodeTests.cs" />
-    <Compile Include="GetTFSCodeTests2.cs" />
-    <Compile Include="GetTFSCodeTests3.cs" />
-    <Compile Include="GetTFSCodeTests4.cs" />
-    <Compile Include="GetTFSCodeTests5.cs" />
-    <Compile Include="GetTFSCodeTests6.cs" />
-    <Compile Include="GetTFSCodeTests7.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
