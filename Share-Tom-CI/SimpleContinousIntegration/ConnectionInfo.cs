@@ -1,4 +1,4 @@
-﻿namespace Coola.VisualStudioServices.SimpleContinousIntegration
+﻿namespace SimpleContinousIntegration
 {
     public struct ConnectionInfo
     {

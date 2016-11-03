@@ -7,7 +7,7 @@ using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
 
-namespace Coola.VisualStudioServices.SimpleContinousIntegration
+namespace SimpleContinousIntegration
 {
     public class BuildManager
     {

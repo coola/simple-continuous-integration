@@ -6,19 +6,27 @@ using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace Coola.VisualStudioServices.SimpleContinousIntegration
+namespace SimpleContinousIntegration
 {
     public class CodeManager
     {
         private readonly string _projectFolderPath;
         private readonly string _localFolderPath;
         private readonly VersionControlServer _versionControlService;
+        private const string buildFolderPrefix = "build";
 
         public CodeManager(TfsConnection teamProjectCollection, string projectFolderPath,
             string localFolderPath)
         {
             _projectFolderPath = projectFolderPath;
-            _localFolderPath = localFolderPath;
+
+            if (localFolderPath.IsNullOrEmpty())
+            {
+                throw new ArgumentException("You should provide specific temporary folder for builds");
+            }
+            
+            _localFolderPath = Path.GetFullPath(localFolderPath);
+
             teamProjectCollection.Authenticate();
             _versionControlService = teamProjectCollection.GetService<VersionControlServer>();
         }
@@ -46,7 +54,7 @@ namespace Coola.VisualStudioServices.SimpleContinousIntegration
 
             var dateTime = DateTime.Now;
             var pathDir =
-                $@"{_localFolderPath}\ShareTomBuildDir_{dateTime.Year}_{dateTime.Month}_{dateTime.Day}-{dateTime.Hour}_{dateTime
+                $@"{_localFolderPath}\{buildFolderPrefix}_{dateTime.Year}_{dateTime.Month}_{dateTime.Day}-{dateTime.Hour}_{dateTime
                     .Minute}_{dateTime.Second}_ver_{changesetId}";
 
             Directory.CreateDirectory(pathDir);

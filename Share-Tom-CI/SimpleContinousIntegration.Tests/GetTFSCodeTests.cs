@@ -1,18 +1,33 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
-using Coola.VisualStudioServices.SimpleContinousIntegration;
 using Xunit;
 
-namespace Coola.VisualStudioServices.SimpleContinousIntegration.Tests
+namespace SimpleContinousIntegration.Tests
 {
     public class GetTFSCodeTests
     {
+        private const string debugConfiguration = "Debug";
+        private const string anyCPUPlatform = "Any CPU";
+
         [Fact]
         public void CheckIfWeHaveWorkingFolder()
         {
             var localWorkingDirectoryPath = GetLocalWorkingDirectoryPath();
             Directory.CreateDirectory(localWorkingDirectoryPath);
             Directory.Exists(localWorkingDirectoryPath);
+        }
+
+
+        [Fact]
+        public void CheckCodeManagerForEmptyFolder()
+        {
+            Assert.Throws<ArgumentException>(() => CreateTestProjectCodeManager(string.Empty));
+        }
+
+        private static CodeManager CreateTestProjectCodeManager(string localFolderPath)
+        {
+            return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), "$/CITestProject", localFolderPath);
         }
 
         [Fact]
@@ -22,6 +37,7 @@ namespace Coola.VisualStudioServices.SimpleContinousIntegration.Tests
             var validate = connectionManager.Validate();
             Assert.True(validate);
         }
+
 
         public static ConnectionManager GetTestCIConnectionManager()
         {
@@ -40,13 +56,12 @@ namespace Coola.VisualStudioServices.SimpleContinousIntegration.Tests
 
         public static CodeManager GetCITestCodeManager()
         {
-            return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), "$/CITestProject",
-                GetLocalWorkingDirectoryPath());
+            return CreateTestProjectCodeManager(GetLocalWorkingDirectoryPath());
         }
 
         private static string GetLocalWorkingDirectoryPath()
         {
-            return System.AppDomain.CurrentDomain.BaseDirectory + @"\Data\Source\";
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Builds\";
         }
 
         private static string GetNewestDirectory()
@@ -104,7 +119,7 @@ namespace Coola.VisualStudioServices.SimpleContinousIntegration.Tests
             Assert.True(testCiConnectionManager.Validate());
             var pathToCodeDir =
                 GetCITestCodeManager().GetCode(TestCommits.BuildWrongTestOK);
-            var buildManager = new BuildManager(pathToCodeDir, "Debug", "Any CPU");
+            var buildManager = new BuildManager(pathToCodeDir, debugConfiguration, anyCPUPlatform);
             Assert.False(buildManager.BuildSolution());
         }
 
@@ -113,7 +128,7 @@ namespace Coola.VisualStudioServices.SimpleContinousIntegration.Tests
         public void CheckBuild()
         {
             var codeFolderPath = GetCode();
-            var buildManager = new BuildManager(codeFolderPath, "Debug", "Any CPU");
+            var buildManager = new BuildManager(codeFolderPath, debugConfiguration, anyCPUPlatform);
             var buildResult = buildManager.BuildSolution();
             Assert.True(buildResult);
         }
@@ -140,8 +155,9 @@ namespace Coola.VisualStudioServices.SimpleContinousIntegration.Tests
             Assert.True(testCiConnectionManager.Validate());
             var pathToCodeDir =
                 GetCITestCodeManager().GetCode(TestCommits.BuildOKTestWrong);
-            var buildManager = new BuildManager(pathToCodeDir, "Debug", "Any CPU");
-            Assert.True(buildManager.BuildSolution());
+            var buildManager = new BuildManager(pathToCodeDir, debugConfiguration, anyCPUPlatform);
+            var resultOfBuild = buildManager.BuildSolution();
+            Assert.True(resultOfBuild);
         }
 
         [Fact]

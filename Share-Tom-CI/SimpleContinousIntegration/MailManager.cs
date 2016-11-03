@@ -1,7 +1,7 @@
 ﻿using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.WorkItemTracking.Client;
 
-namespace Coola.VisualStudioServices.SimpleContinousIntegration
+namespace SimpleContinousIntegration
 {
     public class MailManager
     {

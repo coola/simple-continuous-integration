@@ -2,7 +2,7 @@
 using System.Net;
 using Microsoft.TeamFoundation.Client;
 
-namespace Coola.VisualStudioServices.SimpleContinousIntegration
+namespace SimpleContinousIntegration
 {
     public class ConnectionManager
     {
