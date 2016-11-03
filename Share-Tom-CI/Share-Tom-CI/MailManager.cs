@@ -13,13 +13,12 @@ namespace Share_Tom_CI
             _brokenCommitNumber = brokenCommitNumber;
             _nameOfPersonWhoBrokeTheCommit = nameOfPersonWhoBrokeTheCommit;
         }
-        
 
         private string Body =>
-            $@"
-Hello {_nameOfPersonWhoBrokeTheCommit}
-Your commit number {_brokenCommitNumber} has broken build.
-Please Fix it ASAP";
+                            $@"
+                            Hello {_nameOfPersonWhoBrokeTheCommit}
+                            Your commit number {_brokenCommitNumber} has broken build.
+                            Please Fix it ASAP";
 
    
         public void SendNoBuildMessageUsingVisualStudioServices(TfsTeamProjectCollection getTfsTeamProjectCollection)

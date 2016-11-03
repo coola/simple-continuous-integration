@@ -20,7 +20,7 @@ namespace Share_Tom_CI.Tests
             return new ConnectionManager(GetKerringDevConnectionInfo());
         }
 
-        private static ConnectionManager GetTestCIConnectionManager()
+        public static ConnectionManager GetTestCIConnectionManager()
         {
             return new ConnectionManager(GetTestCIConnectionInfo());
         }
@@ -45,21 +45,13 @@ namespace Share_Tom_CI.Tests
             };
         }
 
-        [Fact]
-        public void RetrieveCodeFromTFS()
-        {
-            var codeManager = GetCITestCodeManager();
-            var codeFolderPath = codeManager.GetCode();
-            Assert.NotEqual(codeFolderPath, string.Empty);
-        }
-
         private static CodeManager GetKerringDevCodeManager()
         {
             return new CodeManager(GetKerringConnectionManager().GetTfsTeamProjectCollection(),
                 "$/ShARe-Evolution/ShARe-TOM", GetLocalWorkingDirectoryPath());
         }
 
-        private static CodeManager GetCITestCodeManager()
+        public static CodeManager GetCITestCodeManager()
         {
             return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), "$/CITestProject",
                 GetLocalWorkingDirectoryPath());
@@ -78,49 +70,11 @@ namespace Share_Tom_CI.Tests
                 select f.Name).First();
         }
 
-        [Fact]
-        public void BuildSolutionOnCode()
+        public static string GetCode()
         {
             var codeManager = GetCITestCodeManager();
             var codeFolderPath = codeManager.GetCode();
-            Assert.NotEqual(codeFolderPath, string.Empty);
-        }
-
-        [Fact]
-        public void CheckGettingSolutionFile()
-        {
-            var solutionFile = CodeManager.GetSolutionFile(GetTestFolderPath);
-            Assert.False(string.IsNullOrEmpty(solutionFile));
-        }
-
-        private static string GetTestFolderPath => @"C:\Data\Source\ShareTomBuildDir_2016_10_17-11_54_56_ver_9";
-
-        [Fact]
-        public void CheckBuild()
-        {
-            var buildManager = new BuildManager(GetTestFolderPath, "Debug", "Any CPU");
-            var buildResult = buildManager.BuildSolution();
-            Assert.True(buildResult);
-        }
-
-        [Fact]
-        public void CheckIfFailedCommitFails()
-        {
-            var testCiConnectionManager = GetTestCIConnectionManager();
-            Assert.True(testCiConnectionManager.Validate());
-            var pathToCodeDir = GetCITestCodeManager().GetCode(TestCommits.BuildWrongTestOK);
-            var buildManager = new BuildManager(pathToCodeDir, "Debug", "Any CPU");
-            Assert.False(buildManager.BuildSolution());
-        }
-
-        [Fact]
-        public void CheckIfGoodCommitIsOK()
-        {
-            var testCiConnectionManager = GetTestCIConnectionManager();
-            Assert.True(testCiConnectionManager.Validate());
-            var pathToCodeDir = GetCITestCodeManager().GetCode(TestCommits.BuildOKTestWrong);
-            var buildManager = new BuildManager(pathToCodeDir, "Debug", "Any CPU");
-            Assert.True(buildManager.BuildSolution());
+            return codeFolderPath;
         }
 
         [Fact]
