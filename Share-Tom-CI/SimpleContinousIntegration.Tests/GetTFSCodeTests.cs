@@ -7,13 +7,25 @@ namespace SimpleContinousIntegration.Tests
 {
     public class GetTFSCodeTests
     {
-        private const string debugConfiguration = "Debug";
-        private const string anyCPUPlatform = "Any CPU";
+        private const string testDebugConfiguration = "Debug";
+        private const string testAnyCPUPlatform = "Any CPU";
+        private const string testServiceAddress = "https://coola.visualstudio.com/";
+        private const string testUserName = "testCoola";
+        private const string testPassword = "CoolaHaslo123";
+        private const string testProjectFolderPath = "$/CITestProject";
+        private readonly string testWorkingDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Builds\";
+
+        public static class TestCommits
+        {
+            public static int BuildWrongTestOK = 10;
+            public static int BuildOKTestWrong = 11;
+            public static int BuildOKTestOK = 12;
+        }
 
         [Fact]
         public void CheckIfWeHaveWorkingFolder()
         {
-            var localWorkingDirectoryPath = GetLocalWorkingDirectoryPath();
+            var localWorkingDirectoryPath = testWorkingDirectoryPath;
             Directory.CreateDirectory(localWorkingDirectoryPath);
             Directory.Exists(localWorkingDirectoryPath);
         }
@@ -26,7 +38,7 @@ namespace SimpleContinousIntegration.Tests
 
         private static CodeManager CreateTestProjectCodeManager(string localFolderPath)
         {
-            return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), "$/CITestProject", localFolderPath);
+            return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), testProjectFolderPath, localFolderPath);
         }
 
         [Fact]
@@ -37,7 +49,6 @@ namespace SimpleContinousIntegration.Tests
             Assert.True(validate);
         }
 
-
         public static ConnectionManager GetTestCIConnectionManager()
         {
             return new ConnectionManager(GetTestCIConnectionInfo());
@@ -47,31 +58,26 @@ namespace SimpleContinousIntegration.Tests
         {
             return new ConnectionInfo
             {
-                ServiceAddress = "https://coola.visualstudio.com/",
-                UserName = "testCoola",
-                Password = "CoolaHaslo123"
+                ServiceAddress = testServiceAddress,
+                UserName = testUserName,
+                Password = testPassword
             };
         }
 
-        public static CodeManager GetCITestCodeManager()
+        public CodeManager GetCITestCodeManager()
         {
-            return CreateTestProjectCodeManager(GetLocalWorkingDirectoryPath());
+            return CreateTestProjectCodeManager(testWorkingDirectoryPath);
         }
-
-        private static string GetLocalWorkingDirectoryPath()
+        
+        private string GetNewestDirectory()
         {
-            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Builds\";
-        }
-
-        private static string GetNewestDirectory()
-        {
-            var directory = new DirectoryInfo(GetLocalWorkingDirectoryPath());
-            return (from f in directory.GetFiles()
+            var directory = new DirectoryInfo(testWorkingDirectoryPath);
+            return (from f in directory.GetDirectories()
                 orderby f.LastWriteTime descending
                 select f.Name).First();
         }
 
-        public static string GetCode()
+        public string GetCode()
         {
             var codeManager = GetCITestCodeManager();
             var codeFolderPath = codeManager.GetCode();
@@ -104,12 +110,7 @@ namespace SimpleContinousIntegration.Tests
             Assert.Equal("Coola", changsetAuthor);
         }
 
-        public static class TestCommits
-        {
-            public static int BuildWrongTestOK = 10;
-            public static int BuildOKTestWrong = 11;
-            public static int BuildOKTestOK = 12;
-        }
+        
 
         [Fact]
         public void CheckIfFailedCommitFails()
@@ -118,7 +119,7 @@ namespace SimpleContinousIntegration.Tests
             Assert.True(testCiConnectionManager.Validate());
             var pathToCodeDir =
                 GetCITestCodeManager().GetCode(TestCommits.BuildWrongTestOK);
-            var buildManager = new BuildManager(pathToCodeDir, debugConfiguration, anyCPUPlatform);
+            var buildManager = new BuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
             Assert.False(buildManager.BuildSolution());
         }
 
@@ -162,17 +163,26 @@ namespace SimpleContinousIntegration.Tests
             Assert.NotEqual(codeFolderPath, string.Empty);
         }
 
-        private static bool RetrieveCodeAndBuild(int? changesetID)
+        private bool RetrieveCodeAndBuild(int? changesetID)
         {
             var pathToCodeDir = GetCITestCodeManager().GetCode(changesetID);
-            var buildManager = new BuildManager(pathToCodeDir, debugConfiguration, anyCPUPlatform);
+            var buildManager = new BuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
             return buildManager.BuildSolution();
         }
 
         [Fact]
         public void RunTestsSuccessfuly()
         {
-            Assert.True(RetrieveCodeAndBuild(TestCommits.BuildOKTestOK));
+            Assert.True(new TestManager(testWorkingDirectoryPath).RunTests());
+        }
+
+        [Fact]
+        public void CheckCIInterface()
+        {
+            var ci = new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword, testWorkingDirectoryPath,
+                TestCommits.BuildOKTestOK, testDebugConfiguration, testAnyCPUPlatform);
+            ci.RetrieveCodeAndBuildAndRunTestsAndSaveResults();
+            Assert.True(File.Exists(Path.Combine(testWorkingDirectoryPath,GetNewestDirectory(), ResultsManager._buildOKFileName)));
         }
     }
 }
