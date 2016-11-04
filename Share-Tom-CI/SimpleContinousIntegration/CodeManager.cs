@@ -15,8 +15,7 @@ namespace SimpleContinousIntegration
         private readonly VersionControlServer _versionControlService;
         private const string buildFolderPrefix = "build";
 
-        public CodeManager(TfsConnection teamProjectCollection, string projectFolderPath,
-            string localFolderPath)
+        public CodeManager(TfsConnection teamProjectCollection, string projectFolderPath, string localFolderPath)
         {
             _projectFolderPath = projectFolderPath;
 
@@ -26,8 +25,7 @@ namespace SimpleContinousIntegration
             }
             
             _localFolderPath = Path.GetFullPath(localFolderPath);
-
-            teamProjectCollection.Authenticate();
+           
             _versionControlService = teamProjectCollection.GetService<VersionControlServer>();
         }
 
@@ -54,8 +52,8 @@ namespace SimpleContinousIntegration
 
             var dateTime = DateTime.Now;
             var pathDir =
-                $@"{_localFolderPath}\{buildFolderPrefix}_{dateTime.Year}_{dateTime.Month}_{dateTime.Day}-{dateTime.Hour}_{dateTime
-                    .Minute}_{dateTime.Second}_ver_{changesetId}";
+                $@"{_localFolderPath}\{buildFolderPrefix}_{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}-{dateTime.Hour:D2}_{dateTime
+                    .Minute:D2}_{dateTime.Second:D2}_ver_{changesetId}";
 
             Directory.CreateDirectory(pathDir);
 

@@ -219,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildManager.cs" />
+    <Compile Include="CI.cs" />
     <Compile Include="CodeManager.cs" />
     <Compile Include="ConnectionInfo.cs" />
     <Compile Include="ConnectionManager.cs" />

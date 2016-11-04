@@ -18,7 +18,6 @@ namespace SimpleContinousIntegration.Tests
             Directory.Exists(localWorkingDirectoryPath);
         }
 
-
         [Fact]
         public void CheckCodeManagerForEmptyFolder()
         {
@@ -127,9 +126,7 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void CheckBuild()
         {
-            var codeFolderPath = GetCode();
-            var buildManager = new BuildManager(codeFolderPath, debugConfiguration, anyCPUPlatform);
-            var buildResult = buildManager.BuildSolution();
+            var buildResult = RetrieveCodeAndBuild(null);
             Assert.True(buildResult);
         }
 
@@ -153,10 +150,7 @@ namespace SimpleContinousIntegration.Tests
         {
             var testCiConnectionManager = GetTestCIConnectionManager();
             Assert.True(testCiConnectionManager.Validate());
-            var pathToCodeDir =
-                GetCITestCodeManager().GetCode(TestCommits.BuildOKTestWrong);
-            var buildManager = new BuildManager(pathToCodeDir, debugConfiguration, anyCPUPlatform);
-            var resultOfBuild = buildManager.BuildSolution();
+            var resultOfBuild = RetrieveCodeAndBuild(TestCommits.BuildOKTestWrong);
             Assert.True(resultOfBuild);
         }
 
@@ -166,6 +160,19 @@ namespace SimpleContinousIntegration.Tests
             var codeManager = GetCITestCodeManager();
             var codeFolderPath = codeManager.GetCode();
             Assert.NotEqual(codeFolderPath, string.Empty);
+        }
+
+        private static bool RetrieveCodeAndBuild(int? changesetID)
+        {
+            var pathToCodeDir = GetCITestCodeManager().GetCode(changesetID);
+            var buildManager = new BuildManager(pathToCodeDir, debugConfiguration, anyCPUPlatform);
+            return buildManager.BuildSolution();
+        }
+
+        [Fact]
+        public void RunTestsSuccessfuly()
+        {
+            Assert.True(RetrieveCodeAndBuild(TestCommits.BuildOKTestOK));
         }
     }
 }
