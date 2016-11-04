@@ -24,12 +24,16 @@ namespace SimpleContinousIntegration
 
         public TfsTeamProjectCollection GetTfsTeamProjectCollection()
         {
+            LogManager.Log("Establishing connection to TFS", TextColor.Red);
             var networkCredential = new NetworkCredential(_connectionInfo.UserName, _connectionInfo.Password);
             var basicAuthCredential = new BasicAuthCredential(networkCredential);
             var tfsClientCredentials = new TfsClientCredentials(basicAuthCredential) {AllowInteractive = false};
             var tfsTeamProjectCollection = new TfsTeamProjectCollection(
                 new Uri(_connectionInfo.ServiceAddress),
                 tfsClientCredentials);
+
+             LogManager.Log("Connection established", TextColor.Green);
+
             return tfsTeamProjectCollection;
         }
 

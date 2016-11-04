@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -37,6 +36,7 @@ namespace SimpleContinousIntegration
 
         public string GetCode(int? versionNumber = null)
         {
+            LogManager.Log("Getting code", TextColor.Red);
             int? changesetId;
             ItemSet itemSet;
             if (versionNumber != null)
@@ -61,7 +61,7 @@ namespace SimpleContinousIntegration
             foreach (var item in itemSet.Items)
             {
                 var serverItem = item.ServerItem;
-                Debug.WriteLine($"Downloading: {serverItem}");
+                LogManager.Log($"Downloading: {serverItem}", TextColor.Blue);
 
                 var filePath = serverItem.Replace(_projectFolderPath, string.Empty);
 
@@ -88,6 +88,9 @@ namespace SimpleContinousIntegration
                         throw new ArgumentOutOfRangeException();
                 }
             }
+
+            LogManager.Log("End of getting code", TextColor.Green);
+            LogManager.Log($"Code directory is {pathDir}");
 
             return pathDir;
         }

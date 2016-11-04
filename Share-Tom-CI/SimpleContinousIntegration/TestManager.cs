@@ -1,7 +1,4 @@
-﻿
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -22,7 +19,7 @@ namespace SimpleContinousIntegration
         private string[] GetTestableAssemblies()
         {
             var result = new List<string>();
-           
+
             foreach (var assemblyPath in _assemblyList)
             {
                 var directoryName = Path.GetDirectoryName(assemblyPath);
@@ -39,6 +36,7 @@ namespace SimpleContinousIntegration
 
         public bool RunTests()
         {
+            LogManager.Log("Running tests", TextColor.Red);
             var p = new Process
             {
                 StartInfo =
@@ -57,8 +55,10 @@ namespace SimpleContinousIntegration
             var output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
 
-            Console.WriteLine("Output:");
-            Console.WriteLine(output);
+            LogManager.Log("Output:");
+            LogManager.Log(output);
+
+            LogManager.Log("End of running tests", TextColor.Green);
 
             return p.ExitCode == 0;
         }

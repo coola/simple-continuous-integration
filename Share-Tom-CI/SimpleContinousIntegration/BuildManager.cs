@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Build.Execution;
@@ -26,6 +25,8 @@ namespace SimpleContinousIntegration
 
         public bool BuildSolution()
         {
+            LogManager.Log("Building code", TextColor.Red);
+
             RestorePackages();
 
             var buildFileUri = CodeManager.GetSolutionFile(_codeFolderPath);
@@ -39,6 +40,8 @@ namespace SimpleContinousIntegration
             var parms = new BuildParameters {Loggers = new List<ILogger> {new ConsoleLogger()}};
 
             var result = Microsoft.Build.Execution.BuildManager.DefaultBuildManager.Build(parms, request);
+
+            LogManager.Log("End of building code", TextColor.Green);
 
             PopulateAssemblyListAfterBuild(result);
 
@@ -54,6 +57,7 @@ namespace SimpleContinousIntegration
 
         private void RestorePackages()
         {
+            LogManager.Log("Restoring packages", TextColor.Red);
             var p = new Process
             {
                 StartInfo =
@@ -72,8 +76,10 @@ namespace SimpleContinousIntegration
             var output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
 
-            Console.WriteLine("Output:");
-            Console.WriteLine(output);
+            LogManager.Log("Output:");
+            LogManager.Log(output);
+
+            LogManager.Log("End of restoring packages", TextColor.Green);
         }
     }
 }

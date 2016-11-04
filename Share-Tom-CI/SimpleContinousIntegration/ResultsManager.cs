@@ -19,12 +19,15 @@
 
         public void SaveResults()
         {
+            LogManager.Log($"Writing results to folder {_buildFolderPath}", TextColor.Red);
             CreateFile(_buildResult ? _buildOKFileName : _buildFailedFileName);
             CreateFile(_testsRunResult ? _testsOKFileName : _testsFailedFileName);
+            LogManager.Log("End of writing results", TextColor.Green);
         }
 
         private void CreateFile( string fileName)
         {
+             LogManager.Log($"{fileName.Replace(".txt", string.Empty)}");
              System.IO.File.Create(System.IO.Path.Combine(_buildFolderPath, fileName));
         }
     }

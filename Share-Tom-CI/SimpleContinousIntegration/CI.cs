@@ -24,8 +24,11 @@
             _platform = platform;
         }
 
+        private string GetLogText => $"Continous Integration for: {_serviceAddress}{_projectFolderPath}";
+
         public void RetrieveCodeAndBuildAndRunTestsAndSaveResults()
         {
+            LogManager.Log($"Starting {GetLogText}", TextColor.Red);
             var connectionManager = new ConnectionManager(new ConnectionInfo
             {
                 ServiceAddress = _serviceAddress,
@@ -50,6 +53,8 @@
             var resultsManager = new ResultsManager(retrievedCodeDirectory, buildSolution, testsRunResult);
 
             resultsManager.SaveResults();
+
+            LogManager.Log($"End of {GetLogText}", TextColor.Green);
         }
     }
 }
