@@ -109,9 +109,7 @@ namespace SimpleContinousIntegration.Tests
             var changsetAuthor = ciTestCodeManager.GetChangsetAuthor(TestCommits.BuildWrongTestOK);
             Assert.Equal("Coola", changsetAuthor);
         }
-
         
-
         [Fact]
         public void CheckIfFailedCommitFails()
         {
@@ -122,8 +120,7 @@ namespace SimpleContinousIntegration.Tests
             var buildManager = new BuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
             Assert.False(buildManager.BuildSolution());
         }
-
-
+        
         [Fact]
         public void CheckBuild()
         {
@@ -173,7 +170,10 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void RunTestsSuccessfuly()
         {
-            Assert.True(new TestManager(testWorkingDirectoryPath).RunTests());
+            var pathToCodeDir = GetCITestCodeManager().GetCode(TestCommits.BuildOKTestOK);
+            var buildManager = new BuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
+            buildManager.BuildSolution();
+            Assert.True(new TestManager(testWorkingDirectoryPath,buildManager.CurrentAssemblyList).RunTests());
         }
 
         [Fact]

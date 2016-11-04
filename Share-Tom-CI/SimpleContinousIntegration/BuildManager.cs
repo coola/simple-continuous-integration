@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
+using System.Linq;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
@@ -11,9 +10,12 @@ namespace SimpleContinousIntegration
 {
     public class BuildManager
     {
+        private const string defaultTarget = "Build";
         private readonly string _codeFolderPath;
         private readonly string _configuration;
         private readonly string _platform;
+
+        public List<string> CurrentAssemblyList { get; private set; }
 
         public BuildManager(string codeFolderPath, string configuration, string platform)
         {
@@ -24,7 +26,6 @@ namespace SimpleContinousIntegration
 
         public bool BuildSolution()
         {
-
             RestorePackages();
 
             var buildFileUri = CodeManager.GetSolutionFile(_codeFolderPath);
@@ -34,12 +35,21 @@ namespace SimpleContinousIntegration
                 ["Configuration"] = _configuration,
                 ["Platform"] = _platform
             };
-            var request = new BuildRequestData(buildFileUri, props, null, new[] {"Build"}, null);
+            var request = new BuildRequestData(buildFileUri, props, null, new[] {defaultTarget}, null);
             var parms = new BuildParameters {Loggers = new List<ILogger> {new ConsoleLogger()}};
 
             var result = Microsoft.Build.Execution.BuildManager.DefaultBuildManager.Build(parms, request);
 
+            PopulateAssemblyListAfterBuild(result);
+
             return result.OverallResult == BuildResultCode.Success;
+        }
+
+        private void PopulateAssemblyListAfterBuild(BuildResult result)
+        {
+            var taskItems = result.ResultsByTarget[defaultTarget].Items;
+
+            CurrentAssemblyList = taskItems.Select(a => a.ToString()).ToList();
         }
 
         private void RestorePackages()
@@ -49,13 +59,13 @@ namespace SimpleContinousIntegration
                 StartInfo =
                 {
                     WorkingDirectory = _codeFolderPath,
-                    FileName = $@"{AssemblyDirectory()}\nuget.exe",
+                    FileName = $@"{CodeManager.AssemblyDirectory()}\nuget.exe",
                     Arguments = "restore",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     WindowStyle = ProcessWindowStyle.Hidden,
                     CreateNoWindow = true
-        }
+                }
             };
             p.Start();
 
@@ -64,14 +74,6 @@ namespace SimpleContinousIntegration
 
             Console.WriteLine("Output:");
             Console.WriteLine(output);
-        }
-
-        private static string AssemblyDirectory()
-        {
-            var codeBase = Assembly.GetExecutingAssembly().CodeBase;
-            var uri = new UriBuilder(codeBase);
-            var path = Uri.UnescapeDataString(uri.Path);
-            return Path.GetDirectoryName(path);
         }
     }
 }

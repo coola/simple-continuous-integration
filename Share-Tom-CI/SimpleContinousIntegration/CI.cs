@@ -43,7 +43,7 @@
 
             var buildSolution = buildManager.BuildSolution();
 
-            var testsManager = new TestManager(retrievedCodeDirectory);
+            var testsManager = new TestManager(retrievedCodeDirectory, buildManager.CurrentAssemblyList);
 
             var testsRunResult = testsManager.RunTests();
 

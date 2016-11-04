@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
@@ -95,6 +96,14 @@ namespace SimpleContinousIntegration
         {
             var fileEntries = Directory.GetFiles(directoryPath);
             return fileEntries.Single(file => file.Contains(".sln"));
+        }
+
+        public static string AssemblyDirectory()
+        {
+            var codeBase = Assembly.GetExecutingAssembly().CodeBase;
+            var uri = new UriBuilder(codeBase);
+            var path = Uri.UnescapeDataString(uri.Path);
+            return Path.GetDirectoryName(path);
         }
     }
 }
