@@ -230,5 +230,11 @@ namespace SimpleContinousIntegration.Tests
             var directorySizeAfterTrim = DirectorySize();          
             Assert.True(maintananceManager.MaxBytesDirectoryCount > directorySizeAfterTrim );
         }
+
+        [Fact]
+        public void CheckGettingOFCurrentMsBuildPath()
+        {
+            MsBuildBuildManager.GetCurrentMsBuildPath();
+        }
     }
 }

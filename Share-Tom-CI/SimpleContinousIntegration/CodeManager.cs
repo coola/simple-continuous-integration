@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using SimpleContinousIntegration.Maintanance;
 
 namespace SimpleContinousIntegration
 {
@@ -13,7 +14,7 @@ namespace SimpleContinousIntegration
         private readonly string _projectFolderPath;
         private readonly string _localFolderPath;
         private readonly VersionControlServer _versionControlService;
-        private const string buildFolderPrefix = "build";
+        private readonly string _buildFolderPrefix;
 
         public CodeManager(TfsConnection teamProjectCollection, string projectFolderPath, string localFolderPath)
         {
@@ -25,8 +26,12 @@ namespace SimpleContinousIntegration
             }
             
             _localFolderPath = Path.GetFullPath(localFolderPath);
+
+            new MaintananceManager(_localFolderPath).TrimBuildDirectoryToMaxSize();
            
             _versionControlService = teamProjectCollection.GetService<VersionControlServer>();
+
+            _buildFolderPrefix = _projectFolderPath.Replace("$", string.Empty);
         }
 
         public string GetChangsetAuthor(int ChangesetId)
@@ -53,7 +58,7 @@ namespace SimpleContinousIntegration
 
             var dateTime = DateTime.Now;
             var pathDir =
-                $@"{_localFolderPath}\{buildFolderPrefix}_{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}-{dateTime.Hour:D2}_{dateTime
+                $@"{_localFolderPath}\{_buildFolderPrefix}_{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}-{dateTime.Hour:D2}_{dateTime
                     .Minute:D2}_{dateTime.Second:D2}_ver_{changesetId}";
 
             Directory.CreateDirectory(pathDir);

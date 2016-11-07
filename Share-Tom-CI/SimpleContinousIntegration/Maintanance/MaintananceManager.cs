@@ -70,18 +70,16 @@ namespace SimpleContinousIntegration.Maintanance
             {
                 var directoryInfo = new DirectoryInfo(Path.Combine(_buildFolderPath, folder));
 
-                if (directoryInfo.GetDirectories().Length == 0 && directoryInfo.GetFiles().Length == 0)
+                if (directoryInfo.GetDirectories().Length != 0 || directoryInfo.GetFiles().Length != 0) continue;
+                try
                 {
-                    try
+                    directoryInfo.Delete();
+                }
+                catch (IOException exception)
+                {
+                    if (!exception.Message.Contains("The process cannot access the file"))
                     {
-                        directoryInfo.Delete();
-                    }
-                    catch (IOException exception)
-                    {
-                        if (!exception.Message.Contains("The process cannot access the file"))
-                        {
-                            throw;
-                        }
+                        throw;
                     }
                 }
             }

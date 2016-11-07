@@ -245,9 +245,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MSBuild.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="nuget.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

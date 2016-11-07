@@ -25,7 +25,6 @@ namespace SimpleContinousIntegration.Console
             var ci = new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword, testWorkingDirectoryPath,
                 null, testDebugConfiguration, testAnyCPUPlatform);
             ci.RetrieveCodeAndBuildAndRunTestsAndSaveResults();
-            
         }
     }
 }
