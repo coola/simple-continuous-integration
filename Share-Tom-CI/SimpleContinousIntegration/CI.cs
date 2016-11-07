@@ -1,4 +1,4 @@
-﻿using SimpleContinousIntegration.Build;
+﻿using SimpleContinousIntegration.Builder;
 
 namespace SimpleContinousIntegration
 {

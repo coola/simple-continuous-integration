@@ -219,15 +219,15 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Build\MsBuildBuildManager.cs" />
+    <Compile Include="Builder\MsBuildBuildManager.cs" />
     <Compile Include="CI.cs" />
     <Compile Include="CodeManager.cs" />
     <Compile Include="ConnectionInfo.cs" />
     <Compile Include="ConnectionManager.cs" />
-    <Compile Include="Build\IBuilder.cs" />
+    <Compile Include="Builder\IBuilder.cs" />
     <Compile Include="LogManager.cs" />
     <Compile Include="MailManager.cs" />
-    <Compile Include="Build\MicrosoftBuildExecution.cs" />
+    <Compile Include="Builder\MicrosoftBuildExecution.cs" />
     <Compile Include="Maintanance\MaintananceManager.cs" />
     <Compile Include="Process\ProcessManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

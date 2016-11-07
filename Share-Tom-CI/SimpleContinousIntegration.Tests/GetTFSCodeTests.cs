@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using SimpleContinousIntegration.Build;
+using Microsoft.TeamFoundation.Common;
+using SimpleContinousIntegration.Builder;
 using SimpleContinousIntegration.Maintanance;
 using Xunit;
 
@@ -234,7 +235,8 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void CheckGettingOFCurrentMsBuildPath()
         {
-            MsBuildBuildManager.GetCurrentMsBuildPath();
+            var currentMsBuildPath = MsBuildBuildManager.GetCurrentMsBuildPath();
+            Assert.False(currentMsBuildPath.IsNullOrEmpty());
         }
     }
 }
