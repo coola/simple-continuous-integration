@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using SimpleContinousIntegration.Build;
+using SimpleContinousIntegration.Maintanance;
 using Xunit;
 
 namespace SimpleContinousIntegration.Tests
@@ -13,7 +15,9 @@ namespace SimpleContinousIntegration.Tests
         private const string testUserName = "testCoola";
         private const string testPassword = "CoolaHaslo123";
         private const string testProjectFolderPath = "$/CITestProject";
-        private readonly string testWorkingDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Builds\";
+
+        private readonly string testWorkingDirectoryPath =
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Builds\";
 
         public static class TestCommits
         {
@@ -38,7 +42,8 @@ namespace SimpleContinousIntegration.Tests
 
         private static CodeManager CreateTestProjectCodeManager(string localFolderPath)
         {
-            return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), testProjectFolderPath, localFolderPath);
+            return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), testProjectFolderPath,
+                localFolderPath);
         }
 
         [Fact]
@@ -67,14 +72,6 @@ namespace SimpleContinousIntegration.Tests
         public CodeManager GetCITestCodeManager()
         {
             return CreateTestProjectCodeManager(testWorkingDirectoryPath);
-        }
-        
-        private string GetNewestDirectory()
-        {
-            var directory = new DirectoryInfo(testWorkingDirectoryPath);
-            return (from f in directory.GetDirectories()
-                orderby f.LastWriteTime descending
-                select f.Name).First();
         }
 
         public string GetCode()
@@ -109,7 +106,7 @@ namespace SimpleContinousIntegration.Tests
             var changsetAuthor = ciTestCodeManager.GetChangsetAuthor(TestCommits.BuildWrongTestOK);
             Assert.Equal("Coola", changsetAuthor);
         }
-        
+
         [Fact]
         public void CheckIfFailedCommitFails()
         {
@@ -117,10 +114,10 @@ namespace SimpleContinousIntegration.Tests
             Assert.True(testCiConnectionManager.Validate());
             var pathToCodeDir =
                 GetCITestCodeManager().GetCode(TestCommits.BuildWrongTestOK);
-            var buildManager = new BuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
+            var buildManager = new MsBuildBuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
             Assert.False(buildManager.BuildSolution());
         }
-        
+
         [Fact]
         public void CheckBuild()
         {
@@ -162,27 +159,76 @@ namespace SimpleContinousIntegration.Tests
 
         private bool RetrieveCodeAndBuild(int? changesetID)
         {
-            var pathToCodeDir = GetCITestCodeManager().GetCode(changesetID);
-            var buildManager = new BuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
+            var buildManager = RetrieveCodeAndBuildReturnBuilder(changesetID);
             return buildManager.BuildSolution();
+        }
+
+        private IBuilder RetrieveCodeAndBuildReturnBuilder(int? changesetID)
+        {
+            var pathToCodeDir = GetCITestCodeManager().GetCode(changesetID);
+            var buildManager = new MsBuildBuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
+            return buildManager;
         }
 
         [Fact]
         public void RunTestsSuccessfuly()
         {
             var pathToCodeDir = GetCITestCodeManager().GetCode(TestCommits.BuildOKTestOK);
-            var buildManager = new BuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
+            var buildManager = new MsBuildBuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
             buildManager.BuildSolution();
-            Assert.True(new TestManager(testWorkingDirectoryPath,buildManager.CurrentAssemblyList).RunTests());
+            Assert.True(new TestManager(testWorkingDirectoryPath, buildManager.CurrentAssemblyList).RunTests());
         }
 
         [Fact]
         public void CheckCIInterface()
         {
-            var ci = new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword, testWorkingDirectoryPath,
+            var ci = new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword,
+                testWorkingDirectoryPath,
                 TestCommits.BuildOKTestOK, testDebugConfiguration, testAnyCPUPlatform);
             ci.RetrieveCodeAndBuildAndRunTestsAndSaveResults();
-            Assert.True(File.Exists(Path.Combine(testWorkingDirectoryPath,GetNewestDirectory(), ResultsManager._buildOKFileName)));
+            Assert.True(
+                File.Exists(Path.Combine(testWorkingDirectoryPath,
+                    new MaintananceManager(testWorkingDirectoryPath).GetNewestDirectory(),
+                    ResultsManager._buildOKFileName)));
+        }
+
+        [Fact]
+        public void TestAssemblyFinderMsBuildManager()
+        {
+            var pathToCodeDir = GetCITestCodeManager().GetCode();
+            var buildManager = new MsBuildBuildManager(pathToCodeDir, testDebugConfiguration, testAnyCPUPlatform);
+            buildManager.BuildSolution();
+            var buildManagerCurrentAssemblyList = buildManager.CurrentAssemblyList;
+            Assert.NotEmpty(buildManagerCurrentAssemblyList);
+            Assert.True(buildManagerCurrentAssemblyList.All(a => a.EndsWith(".dll")));
+        }
+
+         private long DirectorySize()
+        {
+            var maintananceManager = GetMaintananceManager();
+            var directorySize = maintananceManager.GetDirectorySize();
+            return directorySize;
+        }
+
+        private MaintananceManager GetMaintananceManager()
+        {
+            return new MaintananceManager(testWorkingDirectoryPath);
+        }
+
+        [Fact]
+        public void CheckDirectorySizeCounter()
+        {
+            var directorySize = DirectorySize();
+            Assert.NotEqual(0, directorySize);
+        }
+
+        [Fact]
+        public void CheckDirectorySizeCounterTrimFunctionality()
+        {
+            var maintananceManager = GetMaintananceManager();
+            maintananceManager.TrimBuildDirectoryToMaxSize();
+            var directorySizeAfterTrim = DirectorySize();          
+            Assert.True(maintananceManager.MaxBytesDirectoryCount > directorySizeAfterTrim );
         }
     }
 }

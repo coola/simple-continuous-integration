@@ -1,4 +1,6 @@
-﻿namespace SimpleContinousIntegration
+﻿using SimpleContinousIntegration.Build;
+
+namespace SimpleContinousIntegration
 {
     public class CI
     {
@@ -42,7 +44,7 @@
 
             var retrievedCodeDirectory = codeManager.GetCode(_changesetId);
 
-            var buildManager = new BuildManager(retrievedCodeDirectory, _configuration, _platform);
+            var buildManager = new MsBuildBuildManager(retrievedCodeDirectory, _configuration, _platform);
 
             var buildSolution = buildManager.BuildSolution();
 

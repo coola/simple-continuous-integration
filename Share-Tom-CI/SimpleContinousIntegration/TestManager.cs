@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SimpleContinousIntegration.Process;
 
 namespace SimpleContinousIntegration
 {
@@ -12,6 +13,7 @@ namespace SimpleContinousIntegration
 
         public TestManager(string buildFolder, List<string> assemblyList)
         {
+            if (assemblyList == null) throw new ArgumentException("Test assembly list can't be null");
             _buildFolder = buildFolder;
             _assemblyList = assemblyList;
         }
@@ -20,6 +22,7 @@ namespace SimpleContinousIntegration
         {
             var result = new List<string>();
 
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var assemblyPath in _assemblyList)
             {
                 var directoryName = Path.GetDirectoryName(assemblyPath);
@@ -37,30 +40,14 @@ namespace SimpleContinousIntegration
         public bool RunTests()
         {
             LogManager.Log("Running tests", TextColor.Red);
-            var p = new Process
-            {
-                StartInfo =
-                {
-                    WorkingDirectory = _buildFolder,
-                    FileName = $@"{CodeManager.AssemblyDirectory()}\xunit.console.exe",
-                    Arguments = string.Join(" ", GetTestableAssemblies()),
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true
-                }
-            };
-            p.Start();
 
-            var output = p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
-
-            LogManager.Log("Output:");
-            LogManager.Log(output);
+            var processManager = new ProcessManager(_buildFolder,
+                $@"{CodeManager.AssemblyDirectory()}\xunit.console.exe", string.Join(" ", GetTestableAssemblies()));
+            var exitCode = processManager.Run();
 
             LogManager.Log("End of running tests", TextColor.Green);
 
-            return p.ExitCode == 0;
+            return exitCode == 0;
         }
     }
 }
