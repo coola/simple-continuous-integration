@@ -27,6 +27,11 @@ namespace SimpleContinousIntegration.Tests
             public static int BuildOKTestOK = 12;
         }
 
+        public GetTFSCodeTests()
+        {
+             Directory.CreateDirectory(testWorkingDirectoryPath);
+        }
+
         [Fact]
         public void CheckIfWeHaveWorkingFolder()
         {

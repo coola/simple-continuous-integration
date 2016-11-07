@@ -27,6 +27,8 @@ namespace SimpleContinousIntegration
             
             _localFolderPath = Path.GetFullPath(localFolderPath);
 
+            Directory.CreateDirectory(_localFolderPath);
+
             new MaintananceManager(_localFolderPath).TrimBuildDirectoryToMaxSize();
            
             _versionControlService = teamProjectCollection.GetService<VersionControlServer>();
