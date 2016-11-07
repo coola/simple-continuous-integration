@@ -188,10 +188,8 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void CheckCIInterface()
         {
-            var ci = new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword,
-                testWorkingDirectoryPath,
-                TestCommits.BuildOKTestOK, testDebugConfiguration, testAnyCPUPlatform);
-            ci.RetrieveCodeAndBuildAndRunTestsAndSaveResults();
+            var ci = CiFactory();
+            ci.RetrieveCodeAndBuildAndRunTestsAndSaveResultsOnce();
             Assert.True(
                 File.Exists(Path.Combine(testWorkingDirectoryPath,
                     new MaintananceManager(testWorkingDirectoryPath).GetNewestDirectory(),
@@ -242,6 +240,20 @@ namespace SimpleContinousIntegration.Tests
         {
             var currentMsBuildPath = MsBuildBuildManager.GetCurrentMsBuildPath();
             Assert.False(currentMsBuildPath.IsNullOrEmpty());
+        }
+
+        [Fact]
+        public void CheckIfItIsTimeToBuild()
+        {
+            var ci = CiFactory();
+            Assert.False(ci.ItIsTimeToBuild());
+        }
+
+        private CI CiFactory()
+        {
+            return new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword,
+                testWorkingDirectoryPath,
+                TestCommits.BuildOKTestOK, testDebugConfiguration, testAnyCPUPlatform);
         }
     }
 }

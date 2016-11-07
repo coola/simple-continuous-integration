@@ -225,6 +225,7 @@
     <Compile Include="ConnectionInfo.cs" />
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="Builder\IBuilder.cs" />
+    <Compile Include="Continous\ContinousManager.cs" />
     <Compile Include="LogManager.cs" />
     <Compile Include="MailManager.cs" />
     <Compile Include="Builder\MicrosoftBuildExecution.cs" />

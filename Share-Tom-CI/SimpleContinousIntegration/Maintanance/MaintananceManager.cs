@@ -13,11 +13,11 @@ namespace SimpleContinousIntegration.Maintanance
         public MaintananceManager(string buildFolderPath)
         {
             _buildFolderPath = buildFolderPath;
+            Directory.CreateDirectory(_buildFolderPath);
         }
 
-        public MaintananceManager(string buildFolderPath, long maxBytesDirectoryCount)
+        public MaintananceManager(string buildFolderPath, long maxBytesDirectoryCount) : this (buildFolderPath)
         {
-            _buildFolderPath = buildFolderPath;
             MaxBytesDirectoryCount = maxBytesDirectoryCount;
         }
 
@@ -30,7 +30,7 @@ namespace SimpleContinousIntegration.Maintanance
                 currentSize = GetDirectorySize();
             }
         }
-        
+
         private static void DeleteDirectory(string preparedToDeletionDirectoryPath)
         {
             var directoryInfo = new DirectoryInfo(preparedToDeletionDirectoryPath);
@@ -46,6 +46,7 @@ namespace SimpleContinousIntegration.Maintanance
 
             directoryInfo.Delete();
         }
+        
 
         public long GetDirectorySize()
         {
@@ -85,12 +86,12 @@ namespace SimpleContinousIntegration.Maintanance
             }
         }
 
-        private IEnumerable<string> GetAllFoldersOrderedByName()
+        public List<string> GetAllFoldersOrderedByName()
         {
             var directory = new DirectoryInfo(_buildFolderPath);
-            return from f in directory.GetDirectories()
+            return (from f in directory.GetDirectories()
                 orderby f.Name descending
-                select f.Name;
+                select f.Name).ToList();
         }
     }
 }
