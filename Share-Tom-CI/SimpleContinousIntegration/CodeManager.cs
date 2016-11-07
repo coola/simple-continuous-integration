@@ -24,21 +24,35 @@ namespace SimpleContinousIntegration
             {
                 throw new ArgumentException("You should provide specific temporary folder for builds");
             }
-            
+
             _localFolderPath = Path.GetFullPath(localFolderPath);
 
-            Directory.CreateDirectory(_localFolderPath);
-
             new MaintananceManager(_localFolderPath).TrimBuildDirectoryToMaxSize();
-           
+
             _versionControlService = teamProjectCollection.GetService<VersionControlServer>();
 
-            _buildFolderPrefix = _projectFolderPath.Replace("$", string.Empty);
+            _buildFolderPrefix = RemoveUnnecessarySignsFromRemoteProjectFolderPath(_projectFolderPath);
+        }
+
+        public static string RemoveUnnecessarySignsFromRemoteProjectFolderPath(string remoteProjectFolderPath)
+        {
+            return remoteProjectFolderPath.Replace("$/", string.Empty);
         }
 
         public string GetChangsetAuthor(int ChangesetId)
         {
             return _versionControlService.GetChangeset(ChangesetId).OwnerDisplayName;
+        }
+
+        public int? GetMaxCurrentLocalChangeset()
+        {
+            var allFoldersOrderedByName = new MaintananceManager(_localFolderPath).GetAllFoldersOrderedByName();
+            if (!allFoldersOrderedByName.Any()) return null;
+            var onlyFromProject = allFoldersOrderedByName.Where(a => a.StartsWith(_buildFolderPrefix)).ToList();
+            if (!onlyFromProject.Any()) return null;
+            return onlyFromProject
+                    .Select(a => int.Parse(a.Split('_').Last()))
+                    .Max();
         }
 
         public string GetCode(int? versionNumber = null)
@@ -54,14 +68,14 @@ namespace SimpleContinousIntegration
             }
             else
             {
-                changesetId = _versionControlService.GetLatestChangesetId();
+                changesetId = GetLatestChangesetId();
                 itemSet = _versionControlService.GetItems(_projectFolderPath, RecursionType.Full);
             }
 
             var dateTime = DateTime.Now;
-            var pathDir =
-                $@"{_localFolderPath}\{_buildFolderPrefix}_{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}-{dateTime.Hour:D2}_{dateTime
-                    .Minute:D2}_{dateTime.Second:D2}_ver_{changesetId}";
+            var pathDir = Path.Combine($"{_localFolderPath}",
+                $@"{_buildFolderPrefix}_{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}-{dateTime.Hour:D2}_{dateTime
+                    .Minute:D2}_{dateTime.Second:D2}_ver_{changesetId}");
 
             Directory.CreateDirectory(pathDir);
 
@@ -100,6 +114,11 @@ namespace SimpleContinousIntegration
             LogManager.Log($"Code directory is {pathDir}");
 
             return pathDir;
+        }
+
+        public int GetLatestChangesetId()
+        {
+            return _versionControlService.GetLatestChangesetId();
         }
 
         public static string GetSolutionFile(string directoryPath)

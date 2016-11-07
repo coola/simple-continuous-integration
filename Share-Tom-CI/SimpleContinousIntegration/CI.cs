@@ -1,46 +1,79 @@
-﻿using SimpleContinousIntegration.Builder;
+﻿using System;
+using System.Threading;
+using SimpleContinousIntegration.Builder;
 
 namespace SimpleContinousIntegration
 {
     public class CI
     {
         private readonly string _serviceAddress;
-        private readonly string _projectFolderPath;
+        private readonly string _remoteProjectFolderPath;
         private readonly string _userName;
         private readonly string _passWord;
         private readonly string _localBuildFolder;
-        private readonly int? _changesetId;
+        private int? _changesetId;
         private readonly string _configuration;
         private readonly string _platform;
+        private readonly CodeManager _codeManager;
+        private int currentWaitPeriod = 2;
 
-        public CI(string serviceAddress, string projectFolderPath, string userName, string passWord,
+        public CI(string serviceAddress, string remoteProjectFolderPath, string userName, string passWord,
             string localBuildFolder, int? changesetId, string configuration, string platform)
         {
             _serviceAddress = serviceAddress;
-            _projectFolderPath = projectFolderPath;
+            _remoteProjectFolderPath = remoteProjectFolderPath;
             _userName = userName;
             _passWord = passWord;
             _localBuildFolder = localBuildFolder;
             _changesetId = changesetId;
             _configuration = configuration;
             _platform = platform;
+            _codeManager = GetCodeManager();
         }
 
-        private string GetLogText => $"Continous Integration for: {_serviceAddress}{_projectFolderPath}";
+        private string GetLogText => $"Continous Integration for: {_serviceAddress}{_remoteProjectFolderPath}";
 
-        public void RetrieveCodeAndBuildAndRunTestsAndSaveResults()
+        public void RetrieveCodeAndBuildAndRunTestsAndSaveResultsContinous()
+        {
+            if (ItIsTimeToBuild())
+            {
+                _changesetId = _codeManager.GetMaxCurrentLocalChangeset() + 1;
+
+                RetrieveCodeAndBuildAndRunTestsAndSaveResultsOnce();
+
+                ResetWaitPeriod();
+            }
+            else
+            {
+                LogManager.Log("Skiping as it is no new changset in comparison to local build folder.");
+                //LogManager.Log($"Sleeping {currentWaitPeriod} second(s). Press esc to stop.");
+                //Thread.Sleep(currentWaitPeriod * 1000);
+                //IncreaseWaitPeriod();
+            }
+        }
+
+        private void ResetWaitPeriod()
+        {
+            currentWaitPeriod = 2;
+        }
+
+        private void IncreaseWaitPeriod()
+        {
+            currentWaitPeriod = currentWaitPeriod < 3600 ? currentWaitPeriod * 2 : currentWaitPeriod;
+        }
+
+        public bool ItIsTimeToBuild()
+        {
+            var maxCurrentLocalChangeset = _codeManager.GetMaxCurrentLocalChangeset();
+            var latestChangesetId = _codeManager.GetLatestChangesetId();
+            return maxCurrentLocalChangeset < latestChangesetId;
+        }
+
+        public void RetrieveCodeAndBuildAndRunTestsAndSaveResultsOnce()
         {
             LogManager.Log($"Starting {GetLogText}", TextColor.Red);
-            var connectionManager = new ConnectionManager(new ConnectionInfo
-            {
-                ServiceAddress = _serviceAddress,
-                UserName = _userName,
-                Password = _passWord
-            });
 
-            var tfsTeamProjectCollection = connectionManager.GetTfsTeamProjectCollection();
-
-            var codeManager = new CodeManager(tfsTeamProjectCollection, _projectFolderPath, _localBuildFolder);
+            var codeManager = GetCodeManager();
 
             var retrievedCodeDirectory = codeManager.GetCode(_changesetId);
 
@@ -57,6 +90,21 @@ namespace SimpleContinousIntegration
             resultsManager.SaveResults();
 
             LogManager.Log($"End of {GetLogText}", TextColor.Green);
+        }
+
+        private CodeManager GetCodeManager()
+        {
+            var connectionManager = new ConnectionManager(new ConnectionInfo
+            {
+                ServiceAddress = _serviceAddress,
+                UserName = _userName,
+                Password = _passWord
+            });
+
+            var tfsTeamProjectCollection = connectionManager.GetTfsTeamProjectCollection();
+
+            var codeManager = new CodeManager(tfsTeamProjectCollection, _remoteProjectFolderPath, _localBuildFolder);
+            return codeManager;
         }
     }
 }

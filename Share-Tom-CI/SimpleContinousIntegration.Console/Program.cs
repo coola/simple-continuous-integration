@@ -24,7 +24,7 @@ namespace SimpleContinousIntegration.Console
             var testWorkingDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Builds\";
             var ci = new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword, testWorkingDirectoryPath,
                 null, testDebugConfiguration, testAnyCPUPlatform);
-            ci.RetrieveCodeAndBuildAndRunTestsAndSaveResults();
+            ci.RetrieveCodeAndBuildAndRunTestsAndSaveResultsContinous();
         }
     }
 }
