@@ -43,7 +43,7 @@ namespace SimpleContinousIntegration.Test
             LogManager.Log("Running tests", TextColor.Red);
 
             var processManager = new ProcessManager(_buildFolder,
-                $@"{BuildFolder.BuildFolder.AssemblyDirectory()}\xunit.console.exe", string.Join(" ", GetTestableAssemblies()));
+                $@"{BuildFolder.BuildFolderManager.AssemblyDirectory()}\xunit.console.exe", string.Join(" ", GetTestableAssemblies()));
             var exitCode = processManager.Run();
 
             LogManager.Log("End of running tests", TextColor.Green);

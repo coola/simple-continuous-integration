@@ -16,7 +16,7 @@ namespace SimpleContinousIntegration.RestorePackages
         {
             LogManager.Log("Restoring packages", TextColor.Red);
 
-            var processManager = new ProcessManager(_codeFolderPath, $@"{BuildFolder.BuildFolder.AssemblyDirectory()}\nuget.exe", "restore");
+            var processManager = new ProcessManager(_codeFolderPath, $@"{BuildFolder.BuildFolderManager.AssemblyDirectory()}\nuget.exe", "restore");
             processManager.Run();
 
             LogManager.Log("End of restoring packages", TextColor.Green);

@@ -238,8 +238,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildSolutionOnCodeTests.cs" />
+    <Compile Include="BuildsTests.cs" />
+    <Compile Include="CheckGettingSolutionFileTests.cs" />
+    <Compile Include="CheckIfGoodCommitIsOKTests.cs" />
+    <Compile Include="CheckIfItIsTimeToBuildTests.cs" />
+    <Compile Include="CIInterfaceTests.cs" />
     <Compile Include="GetTFSCodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RetrieveCodeFromTFSTests.cs" />
+    <Compile Include="RunTestsSuccessfulyTests.cs" />
+    <Compile Include="TestAssemblyFinderMsBuildManagerTests.cs" />
+    <Compile Include="VariuosCommitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

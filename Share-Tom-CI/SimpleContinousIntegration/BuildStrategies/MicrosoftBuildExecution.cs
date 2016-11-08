@@ -30,7 +30,7 @@ namespace SimpleContinousIntegration.BuildStrategies
 
             new RestorePackagesManager(_codeFolderPath).RestorePackages();
 
-            var buildFileUri = BuildFolder.BuildFolder.GetSolutionFile(_codeFolderPath);
+            var buildFileUri = BuildFolder.BuildFolderManager.GetSolutionFile(_codeFolderPath);
 
             var props = new Dictionary<string, string>
             {

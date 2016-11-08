@@ -10,14 +10,14 @@ using SimpleContinousIntegration.Maintanance;
 
 namespace SimpleContinousIntegration.BuildFolder
 {
-    public class BuildFolder
+    public class BuildFolderManager
     {
         private readonly string _projectFolderPath;
         private readonly string _localFolderPath;
         private readonly VersionControlServer _versionControlService;
         private readonly string _buildFolderPrefix;
 
-        public BuildFolder(TfsConnection teamProjectCollection, string projectFolderPath, string localFolderPath)
+        public BuildFolderManager(TfsConnection teamProjectCollection, string projectFolderPath, string localFolderPath)
         {
             _projectFolderPath = projectFolderPath;
 
@@ -117,9 +117,11 @@ namespace SimpleContinousIntegration.BuildFolder
 
         private string CreateBuildFolderName(DateTime dateTime, int? changesetId)
         {
+            var uniqueGuid = Guid.NewGuid().ToString();
+            var shortenUniqueGuid = uniqueGuid.Substring(uniqueGuid.Length - 4);
             return Path.Combine($"{_localFolderPath}",
                 $@"{_buildFolderPrefix}_{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}-{dateTime.Hour:D2}_{dateTime
-                    .Minute:D2}_{dateTime.Second:D2}_ver_{changesetId}");
+                    .Minute:D2}_{dateTime.Second:D2}_{shortenUniqueGuid}_ver_{changesetId}");
         }
 
         public int GetLatestChangesetId()

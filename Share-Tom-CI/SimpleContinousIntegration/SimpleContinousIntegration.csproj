@@ -221,7 +221,7 @@
   <ItemGroup>
     <Compile Include="BuildStrategies\MsBuildBuildManager.cs" />
     <Compile Include="CI.cs" />
-    <Compile Include="BuildFolder\BuildFolder.cs" />
+    <Compile Include="BuildFolder\BuildFolderManager.cs" />
     <Compile Include="Connection\ConnectionInfo.cs" />
     <Compile Include="Connection\ConnectionManager.cs" />
     <Compile Include="BuildStrategies\IBuilder.cs" />
@@ -244,12 +244,13 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Content Include="Tools\nuget.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="nuget.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Tools\xunit.console.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="xunit.console.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
