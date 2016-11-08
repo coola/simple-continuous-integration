@@ -9,8 +9,8 @@ namespace SimpleContinousIntegration.Tests
          [Fact]
         public void TestAssemblyFinderMsBuildManager()
         {
-            var pathToCodeDir = new GetTFSCodeTests().GetCITestCodeManager().GetCode();
-            var buildManager = new MsBuildBuildManager(pathToCodeDir, GetTFSCodeTests.testDebugConfiguration, GetTFSCodeTests.testAnyCPUPlatform);
+            var pathToCodeDir = new TestUtilities().GetCITestCodeManager().GetCode();
+            var buildManager = new MsBuildBuildManager(pathToCodeDir, TestUtilities.testDebugConfiguration, TestUtilities.testAnyCPUPlatform);
             buildManager.BuildSolution();
             var buildManagerCurrentAssemblyList = buildManager.CurrentAssemblyList;
             Assert.NotEmpty(buildManagerCurrentAssemblyList);

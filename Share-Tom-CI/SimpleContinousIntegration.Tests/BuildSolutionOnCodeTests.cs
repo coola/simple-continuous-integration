@@ -7,7 +7,7 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void BuildSolutionOnCode()
         {
-            var codeManager = new GetTFSCodeTests().GetCITestCodeManager();
+            var codeManager = new TestUtilities().GetCITestCodeManager();
             var codeFolderPath = codeManager.GetCode();
             Assert.NotEqual(codeFolderPath, string.Empty);
         }

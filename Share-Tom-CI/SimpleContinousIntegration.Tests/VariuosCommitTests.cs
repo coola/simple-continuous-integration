@@ -8,10 +8,11 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void CheckIfFailedCommitFails()
         {
-            var testCiConnectionManager = new GetTFSCodeTests().GetTestCIConnectionManager();
+            var testUtilities = new TestUtilities();
+            var testCiConnectionManager = testUtilities.GetTestCIConnectionManager();
             Assert.True(testCiConnectionManager.Validate());
-            var pathToCodeDir = new GetTFSCodeTests().GetCITestCodeManager().GetCode(GetTFSCodeTests.TestCommits.BuildWrongTestOK);
-            var buildManager = new MsBuildBuildManager(pathToCodeDir, GetTFSCodeTests.testDebugConfiguration, GetTFSCodeTests.testAnyCPUPlatform);
+            var pathToCodeDir = testUtilities.GetCITestCodeManager().GetCode(TestUtilities.TestCommits.BuildWrongTestOK);
+            var buildManager = new MsBuildBuildManager(pathToCodeDir, TestUtilities.testDebugConfiguration, TestUtilities.testAnyCPUPlatform);
             Assert.False(buildManager.BuildSolution());
         }
     }

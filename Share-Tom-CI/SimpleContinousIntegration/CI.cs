@@ -33,6 +33,8 @@ namespace SimpleContinousIntegration
             _changesetId = changesetId;
             _configuration = configuration;
             _platform = platform;
+
+            _buildFolderManager = GetCodeManager();
         }
 
         private string GetLogText => $"Continous Integration for: {_serviceAddress}{_remoteProjectFolderPath}";
@@ -40,8 +42,6 @@ namespace SimpleContinousIntegration
         public void RetrieveCodeAndBuildAndRunTestsAndSaveResultsContinous()
         {
             WriteStartLog();
-
-             _buildFolderManager = GetCodeManager();
 
             while (true)
             {

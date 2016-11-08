@@ -7,7 +7,7 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void RetrieveCodeFromTFS()
         {
-            var codeFolderPath = new GetTFSCodeTests().GetCode();
+            var codeFolderPath = new TestUtilities().GetCode();
             Assert.NotEqual(codeFolderPath, string.Empty);
         }
     }

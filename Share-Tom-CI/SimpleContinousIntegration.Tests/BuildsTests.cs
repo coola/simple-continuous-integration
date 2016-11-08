@@ -7,7 +7,7 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void CheckBuild()
         {
-            var buildResult = new GetTFSCodeTests().RetrieveCodeAndBuild(null);
+            var buildResult = new TestUtilities().RetrieveCodeAndBuild(null);
             Assert.True(buildResult);
         }
     }

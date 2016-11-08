@@ -7,7 +7,7 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void CheckGettingSolutionFile()
         {
-            var codeFolderPath = new GetTFSCodeTests().GetCode();
+            var codeFolderPath = new TestUtilities().GetCode();
             var solutionFile = BuildFolder.BuildFolderManager.GetSolutionFile(codeFolderPath);
             Assert.False(string.IsNullOrEmpty(solutionFile));
         }

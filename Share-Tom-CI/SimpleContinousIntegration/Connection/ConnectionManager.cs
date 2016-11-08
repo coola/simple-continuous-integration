@@ -33,7 +33,7 @@ namespace SimpleContinousIntegration.Connection
                 new Uri(_connectionInfo.ServiceAddress),
                 tfsClientCredentials);
 
-             LogManager.Log("Connection established", TextColor.Green);
+             LogManager.Log("TFS Connection established correctly.", TextColor.Green);
 
             return tfsTeamProjectCollection;
         }

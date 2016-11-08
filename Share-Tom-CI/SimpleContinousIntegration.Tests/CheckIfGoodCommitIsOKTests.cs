@@ -7,10 +7,10 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void CheckIfGoodCommitIsOK()
         {
-            var mainTestsClass = new GetTFSCodeTests();
+            var mainTestsClass = new TestUtilities();
             var testCiConnectionManager = mainTestsClass.GetTestCIConnectionManager();
             Assert.True(testCiConnectionManager.Validate());
-            var resultOfBuild = mainTestsClass.RetrieveCodeAndBuild(GetTFSCodeTests.TestCommits.BuildOKTestWrong);
+            var resultOfBuild = mainTestsClass.RetrieveCodeAndBuild(TestUtilities.TestCommits.BuildOKTestWrong);
             Assert.True(resultOfBuild);
         }
     }
