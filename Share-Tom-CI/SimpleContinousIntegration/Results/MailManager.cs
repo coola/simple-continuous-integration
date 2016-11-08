@@ -1,7 +1,7 @@
 ﻿using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.WorkItemTracking.Client;
 
-namespace SimpleContinousIntegration
+namespace SimpleContinousIntegration.Results
 {
     public class MailManager
     {

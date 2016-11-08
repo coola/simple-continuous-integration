@@ -5,18 +5,19 @@ using System.Reflection;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using SimpleContinousIntegration.Log;
 using SimpleContinousIntegration.Maintanance;
 
-namespace SimpleContinousIntegration
+namespace SimpleContinousIntegration.BuildFolder
 {
-    public class CodeManager
+    public class BuildFolder
     {
         private readonly string _projectFolderPath;
         private readonly string _localFolderPath;
         private readonly VersionControlServer _versionControlService;
         private readonly string _buildFolderPrefix;
 
-        public CodeManager(TfsConnection teamProjectCollection, string projectFolderPath, string localFolderPath)
+        public BuildFolder(TfsConnection teamProjectCollection, string projectFolderPath, string localFolderPath)
         {
             _projectFolderPath = projectFolderPath;
 
@@ -73,9 +74,7 @@ namespace SimpleContinousIntegration
             }
 
             var dateTime = DateTime.Now;
-            var pathDir = Path.Combine($"{_localFolderPath}",
-                $@"{_buildFolderPrefix}_{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}-{dateTime.Hour:D2}_{dateTime
-                    .Minute:D2}_{dateTime.Second:D2}_ver_{changesetId}");
+            var pathDir = CreateBuildFolderName(dateTime, changesetId);
 
             Directory.CreateDirectory(pathDir);
 
@@ -114,6 +113,13 @@ namespace SimpleContinousIntegration
             LogManager.Log($"Code directory is {pathDir}");
 
             return pathDir;
+        }
+
+        private string CreateBuildFolderName(DateTime dateTime, int? changesetId)
+        {
+            return Path.Combine($"{_localFolderPath}",
+                $@"{_buildFolderPrefix}_{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}-{dateTime.Hour:D2}_{dateTime
+                    .Minute:D2}_{dateTime.Second:D2}_ver_{changesetId}");
         }
 
         public int GetLatestChangesetId()

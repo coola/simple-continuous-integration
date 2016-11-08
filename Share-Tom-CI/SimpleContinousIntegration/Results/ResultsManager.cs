@@ -1,4 +1,6 @@
-﻿namespace SimpleContinousIntegration
+﻿using SimpleContinousIntegration.Log;
+
+namespace SimpleContinousIntegration.Results
 {
     public class ResultsManager
     {

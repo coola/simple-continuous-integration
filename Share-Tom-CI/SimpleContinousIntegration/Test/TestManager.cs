@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SimpleContinousIntegration.Log;
 using SimpleContinousIntegration.Process;
 
-namespace SimpleContinousIntegration
+namespace SimpleContinousIntegration.Test
 {
     public class TestManager
     {
@@ -42,7 +43,7 @@ namespace SimpleContinousIntegration
             LogManager.Log("Running tests", TextColor.Red);
 
             var processManager = new ProcessManager(_buildFolder,
-                $@"{CodeManager.AssemblyDirectory()}\xunit.console.exe", string.Join(" ", GetTestableAssemblies()));
+                $@"{BuildFolder.BuildFolder.AssemblyDirectory()}\xunit.console.exe", string.Join(" ", GetTestableAssemblies()));
             var exitCode = processManager.Run();
 
             LogManager.Log("End of running tests", TextColor.Green);

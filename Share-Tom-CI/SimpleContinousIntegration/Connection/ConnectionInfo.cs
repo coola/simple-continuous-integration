@@ -1,4 +1,4 @@
-﻿namespace SimpleContinousIntegration
+﻿namespace SimpleContinousIntegration.Connection
 {
     public struct ConnectionInfo
     {

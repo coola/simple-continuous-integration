@@ -1,6 +1,8 @@
-﻿using System;
-using System.Threading;
-using SimpleContinousIntegration.Builder;
+﻿using SimpleContinousIntegration.BuildStrategies;
+using SimpleContinousIntegration.Connection;
+using SimpleContinousIntegration.Log;
+using SimpleContinousIntegration.Results;
+using SimpleContinousIntegration.Test;
 
 namespace SimpleContinousIntegration
 {
@@ -14,7 +16,7 @@ namespace SimpleContinousIntegration
         private int? _changesetId;
         private readonly string _configuration;
         private readonly string _platform;
-        private readonly CodeManager _codeManager;
+        private readonly BuildFolder.BuildFolder _buildFolder;
         private int currentWaitPeriod = 2;
 
         public CI(string serviceAddress, string remoteProjectFolderPath, string userName, string passWord,
@@ -28,7 +30,7 @@ namespace SimpleContinousIntegration
             _changesetId = changesetId;
             _configuration = configuration;
             _platform = platform;
-            _codeManager = GetCodeManager();
+            _buildFolder = GetCodeManager();
         }
 
         private string GetLogText => $"Continous Integration for: {_serviceAddress}{_remoteProjectFolderPath}";
@@ -37,7 +39,7 @@ namespace SimpleContinousIntegration
         {
             if (ItIsTimeToBuild())
             {
-                _changesetId = _codeManager.GetMaxCurrentLocalChangeset() + 1;
+                _changesetId = _buildFolder.GetMaxCurrentLocalChangeset() + 1;
 
                 RetrieveCodeAndBuildAndRunTestsAndSaveResultsOnce();
 
@@ -64,8 +66,8 @@ namespace SimpleContinousIntegration
 
         public bool ItIsTimeToBuild()
         {
-            var maxCurrentLocalChangeset = _codeManager.GetMaxCurrentLocalChangeset();
-            var latestChangesetId = _codeManager.GetLatestChangesetId();
+            var maxCurrentLocalChangeset = _buildFolder.GetMaxCurrentLocalChangeset();
+            var latestChangesetId = _buildFolder.GetLatestChangesetId();
             return maxCurrentLocalChangeset < latestChangesetId;
         }
 
@@ -92,7 +94,7 @@ namespace SimpleContinousIntegration
             LogManager.Log($"End of {GetLogText}", TextColor.Green);
         }
 
-        private CodeManager GetCodeManager()
+        private BuildFolder.BuildFolder GetCodeManager()
         {
             var connectionManager = new ConnectionManager(new ConnectionInfo
             {
@@ -103,7 +105,7 @@ namespace SimpleContinousIntegration
 
             var tfsTeamProjectCollection = connectionManager.GetTfsTeamProjectCollection();
 
-            var codeManager = new CodeManager(tfsTeamProjectCollection, _remoteProjectFolderPath, _localBuildFolder);
+            var codeManager = new BuildFolder.BuildFolder(tfsTeamProjectCollection, _remoteProjectFolderPath, _localBuildFolder);
             return codeManager;
         }
     }

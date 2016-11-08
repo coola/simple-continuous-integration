@@ -5,7 +5,7 @@ using Microsoft.Win32;
 using SimpleContinousIntegration.Process;
 using SimpleContinousIntegration.RestorePackages;
 
-namespace SimpleContinousIntegration.Builder
+namespace SimpleContinousIntegration.BuildStrategies
 {
     public class MsBuildBuildManager : IBuilder
     {

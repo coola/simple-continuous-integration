@@ -2,8 +2,11 @@
 using System.IO;
 using System.Linq;
 using Microsoft.TeamFoundation.Common;
-using SimpleContinousIntegration.Builder;
+using SimpleContinousIntegration.BuildStrategies;
+using SimpleContinousIntegration.Connection;
 using SimpleContinousIntegration.Maintanance;
+using SimpleContinousIntegration.Results;
+using SimpleContinousIntegration.Test;
 using Xunit;
 
 namespace SimpleContinousIntegration.Tests
@@ -46,9 +49,9 @@ namespace SimpleContinousIntegration.Tests
             Assert.Throws<ArgumentException>(() => CreateTestProjectCodeManager(string.Empty));
         }
 
-        private static CodeManager CreateTestProjectCodeManager(string localFolderPath)
+        private static BuildFolder.BuildFolder CreateTestProjectCodeManager(string localFolderPath)
         {
-            return new CodeManager(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), testProjectFolderPath,
+            return new BuildFolder.BuildFolder(GetTestCIConnectionManager().GetTfsTeamProjectCollection(), testProjectFolderPath,
                 localFolderPath);
         }
 
@@ -75,7 +78,7 @@ namespace SimpleContinousIntegration.Tests
             };
         }
 
-        public CodeManager GetCITestCodeManager()
+        public BuildFolder.BuildFolder GetCITestCodeManager()
         {
             return CreateTestProjectCodeManager(testWorkingDirectoryPath);
         }
@@ -135,7 +138,7 @@ namespace SimpleContinousIntegration.Tests
         public void CheckGettingSolutionFile()
         {
             var codeFolderPath = GetCode();
-            var solutionFile = CodeManager.GetSolutionFile(codeFolderPath);
+            var solutionFile = BuildFolder.BuildFolder.GetSolutionFile(codeFolderPath);
             Assert.False(string.IsNullOrEmpty(solutionFile));
         }
 

@@ -3,9 +3,10 @@ using System.Linq;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
+using SimpleContinousIntegration.Log;
 using SimpleContinousIntegration.RestorePackages;
 
-namespace SimpleContinousIntegration.Builder
+namespace SimpleContinousIntegration.BuildStrategies
 {
     public class MicrosoftBuildExecution : IBuilder
     {
@@ -29,7 +30,7 @@ namespace SimpleContinousIntegration.Builder
 
             new RestorePackagesManager(_codeFolderPath).RestorePackages();
 
-            var buildFileUri = CodeManager.GetSolutionFile(_codeFolderPath);
+            var buildFileUri = BuildFolder.BuildFolder.GetSolutionFile(_codeFolderPath);
 
             var props = new Dictionary<string, string>
             {

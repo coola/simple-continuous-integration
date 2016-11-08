@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SimpleContinousIntegration.Builder
+namespace SimpleContinousIntegration.BuildStrategies
 {
     public interface IBuilder
     {

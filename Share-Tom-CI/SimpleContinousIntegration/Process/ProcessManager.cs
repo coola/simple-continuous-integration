@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using SimpleContinousIntegration.Log;
 
 namespace SimpleContinousIntegration.Process
 {

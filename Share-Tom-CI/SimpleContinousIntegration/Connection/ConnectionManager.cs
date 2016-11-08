@@ -2,8 +2,9 @@
 using System.Net;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Common;
+using SimpleContinousIntegration.Log;
 
-namespace SimpleContinousIntegration
+namespace SimpleContinousIntegration.Connection
 {
     public class ConnectionManager
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace SimpleContinousIntegration
+namespace SimpleContinousIntegration.Log
 {
     public static class LogManager
     {
