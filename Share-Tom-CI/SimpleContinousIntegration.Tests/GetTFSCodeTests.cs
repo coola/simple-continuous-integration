@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.TeamFoundation.Common;
+using SimpleContinousIntegration.BuildFolder;
 using SimpleContinousIntegration.BuildStrategies;
 using SimpleContinousIntegration.Results;
 using Xunit;
@@ -88,6 +89,34 @@ namespace SimpleContinousIntegration.Tests
         {
             var currentMsBuildPath = MsBuildBuildManager.GetCurrentMsBuildPath();
             Assert.False(currentMsBuildPath.IsNullOrEmpty());
+        }
+
+        [Fact]
+        public void RemoteProjectPConvertingToLocalTemoraryFolderPathOnlyDollar()
+        {
+            var result = BuildFolderManager.RemoveUnnecessarySignsFromRemoteProjectFolderPath("$projectpath");
+            Assert.Equal("projectpath", result);
+        }
+
+        [Fact]
+        public void RemoteProjectPConvertingToLocalTemoraryFolderPathOneSlash()
+        {
+            var result = BuildFolderManager.RemoveUnnecessarySignsFromRemoteProjectFolderPath("/projectpath");
+            Assert.Equal("_projectpath", result);
+        }
+
+        [Fact]
+        public void RemoteProjectPConvertingToLocalTemoraryFolderPathFewSlashes()
+        {
+            var result = BuildFolderManager.RemoveUnnecessarySignsFromRemoteProjectFolderPath("/projectpath/projectName/");
+            Assert.Equal("_projectpath_projectName_", result);
+        }
+
+        [Fact]
+        public void RemoteProjectPConvertingToLocalTemoraryFolderPathOneDollarAndFewSlashes()
+        {
+            var result = BuildFolderManager.RemoveUnnecessarySignsFromRemoteProjectFolderPath("$/projectpath/projectName/");
+            Assert.Equal("_projectpath_projectName_", result);
         }
     }
 }

@@ -8,7 +8,9 @@ namespace SimpleContinousIntegration.Maintanance
     {
         private readonly string _buildFolderPath;
 
-        public long MaxBytesDirectoryCount { get; } = 1073741824;
+        public long MaxBytesDirectoryCount { get; } = _10GigaBytesInBytes;
+
+        private static long _10GigaBytesInBytes => 10000000000;
 
         public MaintananceManager(string buildFolderPath)
         {

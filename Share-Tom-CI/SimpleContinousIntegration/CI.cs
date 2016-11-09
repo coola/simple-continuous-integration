@@ -19,7 +19,7 @@ namespace SimpleContinousIntegration
         private int? _changesetId;
         private readonly string _configuration;
         private readonly string _platform;
-        private BuildFolderManager _buildFolderManager;
+        private readonly BuildFolderManager _buildFolderManager;
         private int currentWaitPeriod = 2;
 
         public CI(string serviceAddress, string remoteProjectFolderPath, string userName, string passWord,

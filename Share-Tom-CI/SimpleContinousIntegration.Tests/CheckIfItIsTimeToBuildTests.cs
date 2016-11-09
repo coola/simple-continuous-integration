@@ -7,7 +7,8 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void CheckIfItIsTimeToBuild()
         {
-            var ci = new TestUtilities().CiFactory();
+            var ci = new TestUtilities().CiFactoryNewest();
+            ci.RetrieveCodeAndBuildAndRunTestsAndSaveResultsOnce();
             Assert.False(ci.ItIsTimeToBuild());
         }
     }

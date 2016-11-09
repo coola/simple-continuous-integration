@@ -37,7 +37,7 @@ namespace SimpleContinousIntegration.BuildFolder
 
         public static string RemoveUnnecessarySignsFromRemoteProjectFolderPath(string remoteProjectFolderPath)
         {
-            return remoteProjectFolderPath.Replace("$/", string.Empty);
+            return remoteProjectFolderPath.Replace("$", string.Empty).Replace("/", "_");
         }
 
         public string GetChangsetAuthor(int ChangesetId)

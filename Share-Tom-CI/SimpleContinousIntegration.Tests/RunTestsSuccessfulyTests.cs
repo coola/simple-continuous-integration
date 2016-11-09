@@ -13,7 +13,9 @@ namespace SimpleContinousIntegration.Tests
             var pathToCodeDir = getTfsCodeTests.GetCITestCodeManager().GetCode(TestUtilities.TestCommits.BuildOKTestOK);
             var buildManager = new MsBuildBuildManager(pathToCodeDir, TestUtilities.testDebugConfiguration, TestUtilities.testAnyCPUPlatform);
             buildManager.BuildSolution();
-            Assert.True(new TestManager(getTfsCodeTests.testWorkingDirectoryPath, buildManager.CurrentAssemblyList).RunTests());
+            var testManager = new TestManager(getTfsCodeTests.testWorkingDirectoryPath, buildManager.CurrentAssemblyList);
+            var testsResult = testManager.RunTests();
+            Assert.True(testsResult);
         }
     }
 }

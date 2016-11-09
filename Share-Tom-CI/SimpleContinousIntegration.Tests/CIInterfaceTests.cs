@@ -8,7 +8,7 @@ namespace SimpleContinousIntegration.Tests
         public void CheckCIInterface()
         {
             var getTfsCodeTests = new TestUtilities();
-            var ci = getTfsCodeTests.CiFactory();
+            var ci = getTfsCodeTests.CiFactoryBuildOKTestsOK();
             ci.RetrieveCodeAndBuildAndRunTestsAndSaveResultsOnce();
         }
     }

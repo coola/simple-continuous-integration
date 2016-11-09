@@ -85,11 +85,17 @@ namespace SimpleContinousIntegration.Tests
             return new MaintananceManager(testWorkingDirectoryPath);
         }
 
-         public CI CiFactory()
+         public CI CiFactoryBuildOKTestsOK()
         {
             return new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword,
                 testWorkingDirectoryPath,
                 TestCommits.BuildOKTestOK, testDebugConfiguration, testAnyCPUPlatform);
+        }
+        public CI CiFactoryNewest()
+        {
+            return new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword,
+                testWorkingDirectoryPath,
+                null, testDebugConfiguration, testAnyCPUPlatform);
         }
     }
 }
