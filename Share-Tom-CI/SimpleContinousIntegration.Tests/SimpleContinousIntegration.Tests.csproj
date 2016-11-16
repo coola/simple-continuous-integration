@@ -246,7 +246,6 @@
     <Compile Include="RunTestsSuccessfulyTests.cs" />
     <Compile Include="TestAssemblyFinderMsBuildManagerTests.cs" />
     <Compile Include="TestUtilities.cs" />
-    <Compile Include="TestXUnitRunner.cs" />
     <Compile Include="VariuosCommitTests.cs" />
   </ItemGroup>
   <ItemGroup>
