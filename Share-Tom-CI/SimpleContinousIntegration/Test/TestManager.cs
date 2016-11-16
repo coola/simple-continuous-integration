@@ -19,7 +19,7 @@ namespace SimpleContinousIntegration.Test
             _assemblyList = assemblyList;
         }
 
-        private string[] GetTestableAssemblies()
+        public string[] GetTestableAssemblies()
         {
             var result = new List<string>();
 
@@ -28,13 +28,13 @@ namespace SimpleContinousIntegration.Test
             {
                 var directoryName = Path.GetDirectoryName(assemblyPath);
                 if (directoryName == null) continue;
-                var files = Directory.GetFiles(directoryName);
-                if (files.Any(file => file.Contains("xunit") && file.EndsWith(".dll")))
+                var strings = directoryName.Split('\\');
+                var projectName = strings[strings.Length - 3];
+                if (assemblyPath.EndsWith($"{projectName}.dll"))
                 {
                     result.Add(assemblyPath);
                 }
             }
-
             return result.ToArray();
         }
 

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Coola.VisualStudioServices.SimpleContinousIntegration</id>
-    <version>1.0.0.3</version>
+    <version>$version$</version>
     <title>$title$</title>
     <authors>michal.kulinski</authors>
     <owners>michal.kulinski</owners>
