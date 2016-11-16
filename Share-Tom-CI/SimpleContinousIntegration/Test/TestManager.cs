@@ -28,9 +28,11 @@ namespace SimpleContinousIntegration.Test
             {
                 var directoryName = Path.GetDirectoryName(assemblyPath);
                 if (directoryName == null) continue;
+                if (!Directory.GetFiles(directoryName).Any(file => file.Contains("xunit"))) continue;
                 var strings = directoryName.Split('\\');
                 var projectName = strings[strings.Length - 3];
-                if (assemblyPath.EndsWith($"{projectName}.dll"))
+                var isBin = strings[strings.Length - 2] == "bin";
+                if (isBin && assemblyPath.EndsWith($"{projectName}.dll"))
                 {
                     result.Add(assemblyPath);
                 }
