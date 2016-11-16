@@ -9,6 +9,13 @@ using SimpleContinousIntegration.Test;
 
 namespace SimpleContinousIntegration
 {
+    /// <summary>
+    /// Class that allows you to connect to Visual Studio Service to TFS service
+    /// It dowload current code 
+    /// It builds it.
+    /// It run tests.
+    /// It produces output of build and run.
+    /// </summary>
     public class CI
     {
         private readonly string _serviceAddress;

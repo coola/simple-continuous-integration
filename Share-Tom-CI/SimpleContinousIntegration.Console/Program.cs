@@ -6,6 +6,10 @@ namespace SimpleContinousIntegration.Console
     {
         static void Main(string[] args)
         {
+            //args = new[] {"https://coola.visualstudio.com/", "$/CITestProject", "testCoola", "CoolaHaslo123"};
+
+            args = new[] {"https://keringdev.visualstudio.com/", "$/ShARe-Evolution/ShARe-TOM", "coola", "CoolaHaslo123"};
+
             if (args.Length == 0)
             {
                 System.Console.Out.WriteLine(string.Empty);
