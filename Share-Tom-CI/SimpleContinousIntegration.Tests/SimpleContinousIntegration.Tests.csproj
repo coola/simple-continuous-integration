@@ -238,6 +238,7 @@
     <Compile Include="CheckGettingSolutionFileTests.cs" />
     <Compile Include="CheckIfGoodCommitIsOKTests.cs" />
     <Compile Include="CheckIfItIsTimeToBuildTests.cs" />
+    <Compile Include="CIConstructorTests.cs" />
     <Compile Include="CIInterfaceTests.cs" />
     <Compile Include="GetTFSCodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

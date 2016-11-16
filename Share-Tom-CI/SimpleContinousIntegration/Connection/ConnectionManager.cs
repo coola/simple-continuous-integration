@@ -23,6 +23,16 @@ namespace SimpleContinousIntegration.Connection
             _connectionInfo = connectionInfo;
         }
 
+        public ConnectionManager(string serviceAddress, string userName, string password)
+        {
+            _connectionInfo = new ConnectionInfo
+            {
+                ServiceAddress = serviceAddress,
+                UserName = userName,
+                Password = password
+            };
+        }
+        
         public TfsTeamProjectCollection GetTfsTeamProjectCollection()
         {
             LogManager.Log("Establishing connection to TFS", TextColor.Red);
@@ -33,7 +43,7 @@ namespace SimpleContinousIntegration.Connection
                 new Uri(_connectionInfo.ServiceAddress),
                 tfsClientCredentials);
 
-             LogManager.Log("TFS Connection established correctly.", TextColor.Green);
+            LogManager.Log("TFS Connection established correctly.", TextColor.Green);
 
             return tfsTeamProjectCollection;
         }

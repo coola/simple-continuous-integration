@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using SimpleContinousIntegration.Connection;
 using SimpleContinousIntegration.Log;
 using SimpleContinousIntegration.Maintanance;
 
@@ -14,23 +15,43 @@ namespace SimpleContinousIntegration.BuildFolder
     {
         private readonly string _projectFolderPath;
         private readonly string _localFolderPath;
-        private readonly VersionControlServer _versionControlService;
+        private VersionControlServer _versionControlService;
         private readonly string _buildFolderPrefix;
+        private TfsTeamProjectCollection _tfsTeamProjectCollection;
 
-        public BuildFolderManager(TfsConnection teamProjectCollection, string projectFolderPath, string localFolderPath)
+        public BuildFolderManager(string serviceAddress, string userName, string passWord,
+            string remoteProjectFolderPath, string localBuildFolder) : this(remoteProjectFolderPath, localBuildFolder)
+        {
+            var connectionManager = new ConnectionManager(serviceAddress, userName, passWord);
+            ConstructVersionControlService(connectionManager.GetTfsTeamProjectCollection());
+        }
+
+        public BuildFolderManager(TfsTeamProjectCollection teamProjectCollection, string remoteProjectFolderPath,
+            string localFolderPath) : this(remoteProjectFolderPath, localFolderPath)
+        {
+            ConstructVersionControlService(teamProjectCollection);
+        }
+
+        public void ConstructVersionControlService(TfsTeamProjectCollection teamProjectCollection)
+        {
+            _tfsTeamProjectCollection = teamProjectCollection;
+            _versionControlService = _tfsTeamProjectCollection.GetService<VersionControlServer>();
+        }
+
+        private BuildFolderManager(string projectFolderPath,
+            string localFolderPath)
         {
             _projectFolderPath = projectFolderPath;
+            _localFolderPath = localFolderPath;
 
-            if (localFolderPath.IsNullOrEmpty())
+            if (_localFolderPath.IsNullOrEmpty())
             {
                 throw new ArgumentException("You should provide specific temporary folder for builds");
             }
 
-            _localFolderPath = Path.GetFullPath(localFolderPath);
+            _localFolderPath = Path.GetFullPath(_localFolderPath);
 
             new MaintananceManager(_localFolderPath).TrimBuildDirectoryToMaxSize();
-
-            _versionControlService = teamProjectCollection.GetService<VersionControlServer>();
 
             _buildFolderPrefix = RemoveUnnecessarySignsFromRemoteProjectFolderPath(_projectFolderPath);
         }
@@ -52,8 +73,8 @@ namespace SimpleContinousIntegration.BuildFolder
             var onlyFromProject = allFoldersOrderedByName.Where(a => a.StartsWith(_buildFolderPrefix)).ToList();
             if (!onlyFromProject.Any()) return null;
             return onlyFromProject
-                    .Select(a => int.Parse(a.Split('_').Last()))
-                    .Max();
+                .Select(a => int.Parse(a.Split('_').Last()))
+                .Max();
         }
 
         public string GetCode(int? versionNumber = null)

@@ -2,10 +2,10 @@
 using System.Threading;
 using SimpleContinousIntegration.BuildFolder;
 using SimpleContinousIntegration.BuildStrategies;
-using SimpleContinousIntegration.Connection;
 using SimpleContinousIntegration.Log;
 using SimpleContinousIntegration.Results;
 using SimpleContinousIntegration.Test;
+using SimpleContinousIntegration.Time;
 
 namespace SimpleContinousIntegration
 {
@@ -27,8 +27,20 @@ namespace SimpleContinousIntegration
         private readonly string _configuration;
         private readonly string _platform;
         private readonly BuildFolderManager _buildFolderManager;
-        private int currentWaitPeriod = 2;
+        private readonly TimeManager _timeManager;
+        
 
+        /// <summary>
+        /// Constructor for customizing every parameter
+        /// </summary>
+        /// <param name="serviceAddress"></param>
+        /// <param name="remoteProjectFolderPath"></param>
+        /// <param name="userName"></param>
+        /// <param name="passWord"></param>
+        /// <param name="localBuildFolder"></param>
+        /// <param name="changesetId"></param>
+        /// <param name="configuration"></param>
+        /// <param name="platform"></param>
         public CI(string serviceAddress, string remoteProjectFolderPath, string userName, string passWord,
             string localBuildFolder, int? changesetId, string configuration, string platform)
         {
@@ -40,8 +52,8 @@ namespace SimpleContinousIntegration
             _changesetId = changesetId;
             _configuration = configuration;
             _platform = platform;
-
-            _buildFolderManager = GetCodeManager();
+            _buildFolderManager = new BuildFolderManager(_serviceAddress, _userName, _passWord, _remoteProjectFolderPath, _localBuildFolder);
+            _timeManager = new TimeManager(_buildFolderManager);
         }
 
         private string GetLogText => $"Continous Integration for: {_serviceAddress}{_remoteProjectFolderPath}";
@@ -52,7 +64,7 @@ namespace SimpleContinousIntegration
 
             while (true)
             {
-                if (ItIsTimeToBuild())
+                if (_timeManager.ItIsTimeToBuild())
                 {
                     var maxCurrentLocalChangeset = _buildFolderManager.GetMaxCurrentLocalChangeset();
                     if (maxCurrentLocalChangeset != null)
@@ -62,15 +74,16 @@ namespace SimpleContinousIntegration
 
                     RetrieveCodeAndBuildAndRunTestsAndSaveResultsOnce();
 
-                    ResetWaitPeriod();
+                    _timeManager.ResetWaitPeriod();
                 }
                 else
                 {
+                    var currentWaitPeriod = _timeManager.CurrentWaitPeriod;
                     LogManager.Log("Skiping as it is no new changset in comparison to local build folder.");
                     LogManager.Log($"Sleeping {currentWaitPeriod} second(s). Press esc to stop.");
                     LogManager.Log($"Next repository check at {DateTime.Now.AddSeconds(currentWaitPeriod):hh:mm:ss}");
                     Thread.Sleep(currentWaitPeriod * 1000);
-                    IncreaseWaitPeriod();
+                    _timeManager.IncreaseWaitPeriod();
                 }
             }
         }
@@ -82,34 +95,12 @@ namespace SimpleContinousIntegration
             LogManager.Log($"Remote project folder path:  {_remoteProjectFolderPath}", TextColor.Blue);
             LogManager.Log($"Local build folder is:       {_localBuildFolder}", TextColor.Blue);
         }
-
-        private void ResetWaitPeriod()
-        {
-            currentWaitPeriod = 2;
-        }
-
-        private void IncreaseWaitPeriod()
-        {
-            currentWaitPeriod = currentWaitPeriod < FiveMinutesInSeconds ? currentWaitPeriod * 2 : currentWaitPeriod;
-        }
-
-        private static int FiveMinutesInSeconds => 60 * 5;
-
-        public bool ItIsTimeToBuild()
-        {
-            var maxCurrentLocalChangeset = _buildFolderManager.GetMaxCurrentLocalChangeset();
-            if (maxCurrentLocalChangeset == null) return true;
-            var latestChangesetId = _buildFolderManager.GetLatestChangesetId();
-            return maxCurrentLocalChangeset < latestChangesetId;
-        }
-
+        
         public void RetrieveCodeAndBuildAndRunTestsAndSaveResultsOnce()
         {
             LogManager.Log($"Starting {GetLogText}", TextColor.Red);
 
-            var codeManager = GetCodeManager();
-
-            var retrievedCodeDirectory = codeManager.GetCode(_changesetId);
+            var retrievedCodeDirectory = _buildFolderManager.GetCode(_changesetId);
 
             var buildManager = new MsBuildBuildManager(retrievedCodeDirectory, _configuration, _platform);
 
@@ -124,22 +115,6 @@ namespace SimpleContinousIntegration
             resultsManager.SaveResults();
 
             LogManager.Log($"End of {GetLogText}", TextColor.Green);
-        }
-
-        private BuildFolderManager GetCodeManager()
-        {
-            var connectionManager = new ConnectionManager(new ConnectionInfo
-            {
-                ServiceAddress = _serviceAddress,
-                UserName = _userName,
-                Password = _passWord
-            });
-
-            var tfsTeamProjectCollection = connectionManager.GetTfsTeamProjectCollection();
-
-            var codeManager = new BuildFolderManager(tfsTeamProjectCollection, _remoteProjectFolderPath,
-                _localBuildFolder);
-            return codeManager;
         }
     }
 }

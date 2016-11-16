@@ -27,17 +27,7 @@ namespace SimpleContinousIntegration.Tests
 
         public ConnectionManager GetTestCIConnectionManager()
         {
-            return new ConnectionManager(GetTestCIConnectionInfo());
-        }
-
-        private static ConnectionInfo GetTestCIConnectionInfo()
-        {
-            return new ConnectionInfo
-            {
-                ServiceAddress = testServiceAddress,
-                UserName = testUserName,
-                Password = testPassword
-            };
+           return new ConnectionManager(testServiceAddress, testUserName, testPassword);
         }
 
         public BuildFolderManager GetCITestCodeManager()
@@ -91,11 +81,17 @@ namespace SimpleContinousIntegration.Tests
                 testWorkingDirectoryPath,
                 TestCommits.BuildOKTestOK, testDebugConfiguration, testAnyCPUPlatform);
         }
+
         public CI CiFactoryNewest()
         {
             return new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword,
                 testWorkingDirectoryPath,
                 null, testDebugConfiguration, testAnyCPUPlatform);
+        }
+
+        public BuildFolderManager BuildFolderManagerFactory()
+        {
+            return new BuildFolderManager(testServiceAddress, testUserName, testPassword, testProjectFolderPath, testWorkingDirectoryPath);
         }
     }
 }

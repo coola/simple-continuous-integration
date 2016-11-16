@@ -242,6 +242,7 @@
     <Compile Include="RestorePackages\RestorePackagesManager.cs" />
     <Compile Include="Results\ResultsManager.cs" />
     <Compile Include="Test\TestManager.cs" />
+    <Compile Include="Time\TimeManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

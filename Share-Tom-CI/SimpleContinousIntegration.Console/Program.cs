@@ -6,9 +6,6 @@ namespace SimpleContinousIntegration.Console
     {
         static void Main(string[] args)
         {
-            //args = new[] {"https://coola.visualstudio.com/", "$/CITestProject", "testCoola", "CoolaHaslo123"};
-
-            args = new[] {"https://keringdev.visualstudio.com/", "$/ShARe-Evolution/ShARe-TOM", "coola", "CoolaHaslo123"};
 
             if (args.Length == 0)
             {
@@ -28,6 +25,13 @@ namespace SimpleContinousIntegration.Console
                 var testProjectFolderPath = args[1];
                 var testUserName = args[2];
                 var testPassword = args[3];
+
+                System.Console.Out.WriteLine("Parametres are:");
+                System.Console.Out.WriteLine($"testServiceAddress: {testServiceAddress}");
+                System.Console.Out.WriteLine($"testProjectFolderPath: {testProjectFolderPath}");
+                System.Console.Out.WriteLine($"testUserName: {testUserName}");
+                System.Console.Out.WriteLine($"testPassword: {testPassword}");
+
                 var testWorkingDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
                                                @"\Builds\";
                 var ci = new CI(testServiceAddress, testProjectFolderPath, testUserName, testPassword,

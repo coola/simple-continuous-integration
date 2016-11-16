@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using SimpleContinousIntegration.Time;
+using Xunit;
 
 namespace SimpleContinousIntegration.Tests
 {
@@ -7,9 +8,12 @@ namespace SimpleContinousIntegration.Tests
         [Fact]
         public void CheckIfItIsTimeToBuild()
         {
-            var ci = new TestUtilities().CiFactoryNewest();
+            var testUtilities = new TestUtilities();
+            var ci = testUtilities.CiFactoryNewest();
             ci.RetrieveCodeAndBuildAndRunTestsAndSaveResultsOnce();
-            Assert.False(ci.ItIsTimeToBuild());
+            var buildFolderManager= testUtilities.BuildFolderManagerFactory();
+            var timeManager = new TimeManager(buildFolderManager);
+            Assert.False(timeManager.ItIsTimeToBuild());
         }
     }
 }
