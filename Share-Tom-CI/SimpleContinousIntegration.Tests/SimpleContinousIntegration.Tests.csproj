@@ -242,6 +242,7 @@
     <Compile Include="CIInterfaceTests.cs" />
     <Compile Include="GetTFSCodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegistryTests.cs" />
     <Compile Include="RetrieveCodeFromTFSTests.cs" />
     <Compile Include="RunTestsSuccessfulyTests.cs" />
     <Compile Include="TestAssemblyFinderMsBuildManagerTests.cs" />

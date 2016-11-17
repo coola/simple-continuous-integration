@@ -2,6 +2,7 @@
 using System.Threading;
 using SimpleContinousIntegration.BuildFolder;
 using SimpleContinousIntegration.BuildStrategies;
+using SimpleContinousIntegration.Environmental;
 using SimpleContinousIntegration.Log;
 using SimpleContinousIntegration.Results;
 using SimpleContinousIntegration.Test;
@@ -44,6 +45,7 @@ namespace SimpleContinousIntegration
         public CI(string serviceAddress, string remoteProjectFolderPath, string userName, string passWord,
             string localBuildFolder, int? changesetId, string configuration, string platform)
         {
+            EnableLongPathsFunctionality();
             _serviceAddress = serviceAddress;
             _remoteProjectFolderPath = remoteProjectFolderPath;
             _userName = userName;
@@ -54,6 +56,11 @@ namespace SimpleContinousIntegration
             _platform = platform;
             _buildFolderManager = new BuildFolderManager(_serviceAddress, _userName, _passWord, _remoteProjectFolderPath, _localBuildFolder);
             _timeManager = new TimeManager(_buildFolderManager);
+        }
+
+        private static void EnableLongPathsFunctionality()
+        {
+            LongPathsEnabler.SetValueIfNeccesarry();
         }
 
         private string GetLogText => $"Continous Integration for: {_serviceAddress}{_remoteProjectFolderPath}";

@@ -233,6 +233,7 @@
     <Compile Include="Connection\ConnectionInfo.cs" />
     <Compile Include="Connection\ConnectionManager.cs" />
     <Compile Include="BuildStrategies\IBuilder.cs" />
+    <Compile Include="Environmental\LongPathsEnabler.cs" />
     <Compile Include="Log\LogManager.cs" />
     <Compile Include="Results\MailManager.cs" />
     <Compile Include="BuildStrategies\MicrosoftBuildExecution.cs" />
